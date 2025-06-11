@@ -892,6 +892,9 @@ function gerarTabela() {
   const painel = document.getElementById('painelPlanilha');
 painel.innerHTML = html;
 atualizarFolgasNaTabela();
+  
+  // Adicionar esta linha para inicializar os totais
+  atualizarTotais();
 
   // Atualiza o total de jornada prevista no período
   document.getElementById("totalJornadaMes").innerText =
@@ -1049,7 +1052,8 @@ function fecharModalAbono() {
 }
 
 function atualizarTotais() {
-  const tabela = document.querySelector('#tabelaContainer table');
+  // Busca a tabela dentro do painelPlanilha (corrigindo o seletor)
+  const tabela = document.querySelector('#painelPlanilha table');
   if (!tabela) return;
 
   // Inicializa os totais
@@ -1065,7 +1069,7 @@ function atualizarTotais() {
   for (let linha of linhas) {
     // Função auxiliar para converter formato "XhYYm" para minutos
     function converterParaMinutos(texto) {
-      if (!texto || texto === '-') return 0;
+      if (!texto || texto === '-' || texto.trim() === '') return 0;
       
       // Extrai horas e minutos usando regex
       const match = texto.match(/(\d+)h(\d+)m/);
@@ -1109,12 +1113,18 @@ function atualizarTotais() {
     return `${horas}h${mins.toString().padStart(2, '0')}m`;
   }
   
-  // Atualiza os totais na tabela
-  document.getElementById('totalHoras').innerText = formatarMinutos(totalHorasTrabalhadas);
-  document.getElementById('totalExtras').innerText = formatarMinutos(totalExtras);
-  document.getElementById('totalFaltas').innerText = formatarMinutos(totalFaltas);
-  document.getElementById('totalNoturnas').innerText = formatarMinutos(totalNoturnas);
-  document.getElementById('totalAbonadas').innerText = formatarMinutos(totalAbonadas);
+  // Atualiza os totais na tabela - corrigindo acesso direto aos elementos
+  const totalHorasEl = document.getElementById('totalHoras');
+  const totalExtrasEl = document.getElementById('totalExtras');
+  const totalFaltasEl = document.getElementById('totalFaltas');
+  const totalNoturnasEl = document.getElementById('totalNoturnas');
+  const totalAbonadasEl = document.getElementById('totalAbonadas');
+
+  if (totalHorasEl) totalHorasEl.innerText = formatarMinutos(totalHorasTrabalhadas);
+  if (totalExtrasEl) totalExtrasEl.innerText = formatarMinutos(totalExtras);
+  if (totalFaltasEl) totalFaltasEl.innerText = formatarMinutos(totalFaltas);
+  if (totalNoturnasEl) totalNoturnasEl.innerText = formatarMinutos(totalNoturnas);
+  if (totalAbonadasEl) totalAbonadasEl.innerText = formatarMinutos(totalAbonadas);
 }
 
 // Função para imprimir a planilha
