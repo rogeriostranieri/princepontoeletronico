@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="author" content="Rogério Stranieri">
+  <meta name="copyright" content="© 2025 Rogério Stranieri - Todos os direitos reservados">
+  <meta name="generator" content="Sistema de Controle de Ponto v1.0">
+  <meta name="identifier" content="RS-CP-25-V1">
+  <meta name="keywords" content="controle, ponto, trabalho, folha, rogerio, stranieri">
+  <title>Planilha de Ponto Mensal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Cores padronizadas */
+:root {
+  --primary: #2a4d69;
+  --primary-light: #3e6a8f;
+  --secondary: #4b86b4;
+  --secondary-light: #6ba0cd;
+  --success: #2e7d32;
+  --danger: #c62828;
+  --warning: #f57f17;
+  --light: #f7f9fb;
+  --dark: #1e3a52;
+  --gray-100: #f5f7f9;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-400: #ced4da;
+  --gray-500: #adb5bd;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* Tipografia Melhorada */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px; /* Aumentado para melhor legibilidade */
+  color: #333; /* Cor mais escura para melhor contraste */
+  line-height: 1.6; /* Espaçamento entre linhas mais confortável */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h2 {
+  color: var(--primary);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 3px;
+}
+
+h4 {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* Cartões e Painéis */
+#painelConfig, #painelPlanilha {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+  border: none;
+  margin-bottom: 24px;
+  padding: 20px;
+  transition: box-shadow 0.3s;
+}
+
+#painelConfig {
+  border-left: 4px solid var(--secondary);
+}
+
+#painelPlanilha {
+  border-left: 4px solid var(--primary);
+}
+
+/* Botões Modernos */
+button {
+  background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 15px !important;
+}
+
+/* Ajuste das tabelas para melhor legibilidade */
+table {
+  font-size: 15px; /* Fonte maior nas tabelas */
+}
+
+th, td {
+  font-size: 15px; /* Aumentado para melhor legibilidade */
+  padding: 10px 8px; /* Mais espaço para respirar */
+}
+
+th {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+}
+
+button:hover {
+  background: linear-gradient(90deg, var(--primary-light) 60%, var(--primary) 100%);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Tabelas e Dados */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin-top: 18px;
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+th, td {
+  border: 1px solid var(--gray-300);
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+th {
+  background: linear-gradient(180deg, var(--primary), var(--primary-light));
+  color: white;
+  font-weight: 600;
+  padding: 12px 6px;
+  border-color: var(--primary);
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+}
+
+/* Corrige a legibilidade dos cabeçalhos da tabela de configuração */
+#tabelaConfigSemanal th {
+  color: #333 !important;
+  font-weight: 600;
+  background: #e9ecef !important;
+}
+
+/* Linhas zebradas melhoradas */
+tr:nth-child(even):not(.domingo):not(.feriado) {
+  background-color: var(--gray-100);
+}
+
+/* Estados das linhas */
+tr.domingo {
+  background: #fff0f0 !important;
+  border-left: 3px solid #ffb8b8;
+}
+
+tr.feriado {
+  background-color: #fffbeb !important;
+  border-left: 3px solid #ffc107;
+}
+
+tr:hover {
+  background-color: #f0f7ff;
+}
+
+/* Formulários */
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], select {
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 15px !important; /* Aumentado para melhor legibilidade */
+  background: white;
+  transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+input:focus, select:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(75, 134, 180, 0.15);
+  outline: none;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%232a4d69' d='M4.5 6l3.5 3.5L11.5 6H4.5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+}
+
+/* Estados visuais - melhorias */
+.falta-vermelho {
+  color: var(--danger) !important;
+  font-weight: bold !important;
+}
+
+.abono-verde {
+  color: var(--success) !important;
+  font-weight: bold !important;
+}
+
+.trabalhada-azul {
+  color: var(--secondary) !important;
+  font-weight: bold !important;
+}
+
+/* Cabeçalho do site */
+#copyright-notice {
+  text-align: center;
+  margin-bottom: 28px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-300);
+  padding-bottom: 15px;
+  color: var(--dark);
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 15px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animações sutis */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#tabelaContainer {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Ajustes para impressão */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 1cm 1cm 2cm 1cm; /* margem inferior maior para o rodapé */
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  #painelPlanilha {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: white !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  #painelPlanilha table {
+    width: 100% !important;
+    font-size: 11px !important;
+    table-layout: fixed;
+    page-break-inside: auto;
+  }
+  #painelPlanilha table thead,
+  #painelPlanilha table thead th {
+    position: static !important;
+    box-shadow: none !important;
+    background: #e9ecef !important;
+    color: #333 !important;
+  }
+  th, td {
+    padding: 4px 2px !important;
+    font-size: 11px !important;
+    word-break: break-word;
+    page-break-inside: avoid;
+  }
+  tr {
+    page-break-inside: avoid;
+  }
+  tr.domingo, tr.feriado {
+    border-left: none;
+  }
+  /* Oculta elementos que não precisam ser impressos */
+  #painelConfig, button, #copyright-notice {
+    display: none !important;
+  }
+  /* Mostra o rodapé de impressão com copyright */
+  #print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    border-top: 1px solid #eee;
+    padding-top: 3px;
+    margin: 0;
+    background: white;
+    z-index: 9999;
+  }
+  body {
+    margin-bottom: 40px !important; /* espaço extra para o rodapé */
+  }
+}
+  </style>
+</head>
+<body>
+<div id="copyright-notice" style="text-align:center; margin-bottom:20px; font-size:14px; border-bottom:1px solid #ddd; padding-bottom:10px;">
+  <strong>Sistema de Controle de Ponto</strong> &copy; 2025 Rogério Stranieri. Todos os direitos reservados.
+  <div style="font-size:12px; color:#777; margin-top:5px;">Uso exclusivo do cliente. Reprodução ou distribuição não autorizada sujeita a penalidades legais.</div>
+</div>
+
+<div id="termos-uso-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:30px; border-radius:10px; max-width:600px; text-align:left;">
+    <h3 style="margin-top:0">Termos de Uso</h3>
+    <p>Este sistema de Controle de Ponto foi desenvolvido por <strong>Rogério Stranieri</strong> e é fornecido para uso exclusivo do cliente contratante.</p>
+    <p>É estritamente proibido:</p>
+    <ul>
+      <li>Redistribuir ou fornecer este software a terceiros</li>
+      <li>Modificar o código-fonte</li>
+      <li>Remover avisos de direitos autorais</li>
+      <li>Usar para fins diferentes dos previstos na contratação</li>
+    </ul>
+    <p>O uso deste software implica na aceitação destes termos.</p>
+    <div style="text-align:center; margin-top:20px;">
+      <button onclick="aceitarTermos()" style="padding:8px 20px; background:#4CAF50; color:white; border:none; border-radius:4px; cursor:pointer;">Aceito os Termos</button>
+    </div>
+  </div>
+</div>
+
+<h2>Planilha de Ponto Mensal</h2>
+
+<div style="margin-bottom: 16px;">
+  <label>Empresa:
+    <input type="text" id="empresa" placeholder="Nome da Empresa" style="width:320px;">
+  </label>
+  <label style="margin-left: 24px;">Funcionário:
+    <input type="text" id="funcionario" placeholder="Nome do Funcionário" style="width:250px;">
+  </label>
+</div>
+
+<div style="margin-bottom: 16px;">
+  <label>Data Inicial:
+    <input type="date" id="dataInicial">
+  </label>
+  <label style="margin-left: 24px;">Data Final:
+    <input type="date" id="dataFinal">
+  </label>
+</div>
+
+<div style="margin: 18px 0;">
+  <button onclick="gerarPlanilhaComValidacao()" style="padding:8px 24px; font-size:16px;">Gerar Planilha</button>
+  <button id="btnConfig" onclick="mostrarConfiguracoes()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Configuração Semanal</button>
+  <button onclick="window.print()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Imprimir</button>
+</div>
+
+<div style="display: flex; gap: 32px;">
+  <div id="painelConfig" style="flex: 0 0 320px; background: #f4f4f4; border: 1px solid #ccc; padding: 16px; border-radius: 6px; display:none;">
+    <h4>Configuração Semanal</h4>
+    <table style="width:100%; font-size: 14px;" id="tabelaConfigSemanal">
+      <tr>
+        <th>Dia</th>
+        <th>Jornada</th>
+        <th>Descanso?</th>
+      </tr>
+      <tr>
+        <td>Segunda-feira</td>
+        <td><input type="time" id="jornada_seg" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="1" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Terça-feira</td>
+        <td><input type="time" id="jornada_ter" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="2" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Quarta-feira</td>
+        <td><input type="time" id="jornada_qua" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="3" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Quinta-feira</td>
+        <td><input type="time" id="jornada_qui" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="4" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Sexta-feira</td>
+        <td><input type="time" id="jornada_sex" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="5" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Sábado</td>
+        <td><input type="time" id="jornada_sab" value="04:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="6" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Domingo</td>
+        <td><input type="time" id="jornada_dom" value="00:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="0" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();" checked></td>
+      </tr>
+      <tr style="font-weight:bold;background:#e9e9e9;">
+        <td colspan="3" id="totalJornadaSemanal" style="text-align:center;"></td>
+      </tr>
+    </table>
+    <div style="font-size:12px; color:#666; margin-top:8px;">
+      <b>Dica:</b> Marque o dia de descanso semanal (por padrão: domingo).
+    </div>
+  </div>
+  <div id="painelPlanilha" style="flex: 1;">
+  </div>
+</div>
+
+<!-- Modal para abono -->
+<div id="modalAbono" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 12px #0003;min-width:300px;text-align:center;">
+    <h3>Horas a Abonar</h3>
+    <input type="time" id="inputHorasAbonadas" step="60" style="font-size:18px;width:120px;">
+    <div style="margin-top:18px;">
+      <button onclick="confirmarAbono()" style="padding:6px 18px;">OK</button>
+      <button onclick="fecharModalAbono()" style="padding:6px 18px;margin-left:12px;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="print-footer" style="display:none">
+  <p>&copy; 2025 Rogério Stranieri. Todos os direitos reservados.</p>
+</div>
+
+<script>
+/* ========================================================================
+ * Sistema de Controle de Ponto - v1.0.0
+ * Copyright (c) 2025 Rogério Stranieri - Todos os direitos reservados
+ * Código proprietário - Uso exclusivo do cliente sob licença
+ * RSI-25-2805-001
+ * ======================================================================== */
+
+const feriadosFixos = [
+  "01-01", "21-04", "01-05", "07-09", "12-10", "02-11", "15-11", "25-12"
+];
+
+
+// NOVA função para calcular total de jornada no período escolhido
+function calcularTotalJornadaPeriodo(dataInicial, dataFinal) {
+  // Conta quantas vezes cada dia da semana aparece no período
+  let diasSemana = [0,0,0,0,0,0,0];
+  let d = new Date(dataInicial);
+  while (d <= dataFinal) {
+    diasSemana[d.getDay()]++;
+    d.setDate(d.getDate() + 1);
+  }
+  // Soma as jornadas dos dias não descanso
+  let total = 0;
+  for (let i = 0; i < 7; i++) {
+    const jornada = document.getElementById([
+      "jornada_dom","jornada_seg","jornada_ter","jornada_qua",
+      "jornada_qui","jornada_sex","jornada_sab"
+    ][i]).value;
+    const isDescanso = document.querySelector('input[name="descanso"][value="'+i+'"]').checked;
+    if (!isDescanso && jornada) {
+      const [h, m] = jornada.split(":").map(Number);
+      total += (h * 60 + m) * diasSemana[i];
+    }
+  }
+  return total;
+}
+
+// Função exemplo simples (precisa de ajustes para regras completas)
+function calcular(el) {
+  const row = el.parentElement.parentElement;
+  const situacao = row.cells[2].querySelector("select").value;
+  const cellAbono = row.querySelector(".horasAbonadas");
+
+  // Mostra o campo de abono só se selecionado "abonado" ou "atestado"
+  if (situacao === "abonado" || situacao === "atestado") {
+    if (!cellAbono.querySelector("input")) {
+      const input = document.createElement("input");
+      input.type = "time";
+      input.style.width = "90px";
+      input.onchange = function() { calcular(this); };
+      cellAbono.innerHTML = "";
+      cellAbono.appendChild(input);
+    }
+  } else {
+    cellAbono.innerHTML = "";
+  }
+
+  // Adiciona ou remove a classe "feriado" baseado na seleção
+  if (situacao === "feriado") {
+    row.classList.add("feriado");
+  } else {
+    // Preserva a classe feriado apenas se for um feriado fixo
+    const rowIndex = row.rowIndex - 1;
+    const dataInicialEl = document.getElementById('dataInicial');
+    if (dataInicialEl && dataInicialEl.value) {
+      const dataInicialObj = new Date(dataInicialEl.value + "T00:00:00");
+      const tempData = new Date(dataInicialObj);
+      tempData.setDate(dataInicialObj.getDate() + rowIndex);
+
+      const dia = tempData.getDate().toString().padStart(2, '0');
+      const mes = (tempData.getMonth() + 1).toString().padStart(2, '0');
+      const diaStr = `${dia}-${mes}`;
+
+      if (!feriadosFixos.includes(diaStr)) {
+        row.classList.remove("feriado");
+      }
+    } else {
+      row.classList.remove("feriado");
+    }
+  }
+
+  // Pega o valor do abono (em minutos)
+  let abonoMin = 0;
+  if ((situacao === "abonado" || situacao === "atestado") && cellAbono.querySelector("input")) {
+    const val = cellAbono.querySelector("input").value;
+    if (val) {
+      const [h, m] = val.split(":").map(Number);
+      abonoMin = h * 60 + m;
+      row.setAttribute('data-abono-min', abonoMin);
+    } else {
+      row.removeAttribute('data-abono-min');
+    }
+  }
+
+  // Pegue os valores dos 4 campos de horário
+  const entrada1 = row.cells[3].querySelector("input").value;
+  const saida1   = row.cells[4].querySelector("input").value;
+  const entrada2 = row.cells[5].querySelector("input").value;
+  const saida2   = row.cells[6].querySelector("input").value;
+
+  // Descubra o dia da semana da linha usando a data correta
+  const rowIndex = row.rowIndex - 1;
+  let diaSemanaNum, dataAtual;
+  
+  const dataInicialEl = document.getElementById('dataInicial');
+  if (dataInicialEl && dataInicialEl.value) {
+    const dataInicialObj = new Date(dataInicialEl.value + "T00:00:00");
+    dataAtual = new Date(dataInicialObj);
+    dataAtual.setDate(dataInicialObj.getDate() + rowIndex);
+    diaSemanaNum = dataAtual.getDay();
+  } else {
+    // fallback para método antigo se não houver data inicial
+    const mesEl = document.getElementById('mes');
+    const anoEl = document.getElementById('ano');
+    if (mesEl && anoEl) {
+      const ano = parseInt(anoEl.value);
+      const mes = parseInt(mesEl.value);
+      dataAtual = new Date(ano, mes, rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    } else {
+      // último fallback - use a data atual
+      const hoje = new Date();
+      dataAtual = new Date(hoje.getFullYear(), hoje.getMonth(), rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    }
+  }
+
+  const descansoSemanal = getDescansoSemanal();
+  const isDomingo = diaSemanaNum === 0;
+  const isFeriado = (() => {
+    if (dataAtual) {
+      const d = dataAtual.getDate().toString().padStart(2, '0');
+      const m = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+      return feriadosFixos.includes(`${d}-${m}`);
+    }
+    return false;
+  })();
+  const isDescanso = descansoSemanal.includes(diaSemanaNum);
+
+  // Jornada do dia conforme configuração semanal
+  const jornadaStr = getJornadaDiaSemana(diaSemanaNum);
+  if (!jornadaStr) return;
+  const [jh, jm] = jornadaStr.split(":").map(Number);
+  let jornadaMin = jh * 60 + jm;
+
+  // Se domingo e jornada do domingo for 00:00, use a jornada da segunda
+  if (isDomingo && jornadaMin === 0) {
+    const segundaStr = getJornadaDiaSemana(1); // 1 = segunda-feira
+    if (segundaStr) {
+      const [jh2, jm2] = segundaStr.split(":").map(Number);
+      jornadaMin = jh2 * 60 + jm2;
+    }
+  }
+
+  function toMin(hm) {
+    if (!hm) return null;
+    const [h, m] = hm.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function calcTurno(entrada, saida) {
+    if (!entrada || !saida) return { normais: 0, noturnos: 0 };
+    let e = toMin(entrada), s = toMin(saida);
+    let total = s - e;
+    if (total < 0) total += 24 * 60;
+    let normais = 0, noturnos = 0;
+    for (let i = 0; i < total; i++) {
+      let minAtual = (e + i) % (24 * 60);
+      let hora = Math.floor(minAtual / 60);
+      if (hora >= 22 || hora < 5) {
+        noturnos++;
+      } else {
+        normais++;
+      }
+    }
+    let noturnosConvertidos = Math.round(noturnos * (60 / 52.5));
+    return { normais, noturnos: noturnosConvertidos, noturnosOriginais: noturnos };
+  }
+
+  const t1 = calcTurno(entrada1, saida1);
+  const t2 = calcTurno(entrada2, saida2);
+
+  const normais = t1.normais + t2.normais;
+  const noturnas = t1.noturnos + t2.noturnos;
+
+  // 1. Se for feriado, trata tudo como hora extra
+  if (situacao === "feriado" || isFeriado) {
+    const extras = normais + noturnas + abonoMin;
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText =
+      extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+    atualizarTotais();
+    return;
+  }
+
+  // 2. Se for "Folga" (independente de ser descanso ou não), trata como extra
+  if (situacao === "folga") {
+    const extras = normais + noturnas + abonoMin;
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText =
+      extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+    atualizarTotais();
+    return;
+  }
+
+  // 3. Se for dia de descanso na configuração
+  if (isDescanso) {
+    if (situacao === "excecao") {
+      // Calcula normalmente (como dia útil)
+      // (deixe seguir para o cálculo normal mais abaixo)
+    } else {
+      // Qualquer horário lançado é extra
+      const extras = normais + noturnas + abonoMin;
+      row.querySelector(".horasTrabalhadas").innerText = "-";
+      row.querySelector(".extras").innerText =
+        extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+      row.querySelector(".faltas").innerText = "-";
+      row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+      atualizarTotais();
+      return;
+    }
+  }
+
+  // 4. Situações "abonado" e "atestado" (tratamento especial)
+  if (situacao === "abonado" || situacao === "atestado") {
+    // Soma horas trabalhadas + abono
+    const minutosCompensados = normais + noturnas + abonoMin;
+    let extras = 0, faltas = 0;
+    if (minutosCompensados > jornadaMin + 10) {
+      extras = minutosCompensados - jornadaMin;
+    } else if (minutosCompensados > jornadaMin && minutosCompensados <= jornadaMin + 10) {
+      extras = 0;
+    } else if (minutosCompensados < jornadaMin - 10) {
+      faltas = jornadaMin - minutosCompensados;
+    }
+
+    // Mostra as horas trabalhadas normalmente
+    const trabalhadas = normais + noturnas;
+    row.querySelector(".horasTrabalhadas").innerText =
+      `${Math.floor(trabalhadas/60)}h${(trabalhadas%60).toString().padStart(2,"0")}m`;
+    row.querySelector(".extras").innerText = extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = faltas > 0 ? `${Math.floor(faltas/60)}h${(faltas%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+
+    // Estilos
+    row.querySelector(".horasAbonadas").classList.add("abono-verde");
+    if (faltas > 0) {
+      row.querySelector(".faltas").classList.add("falta-vermelho");
+    } else {
+      row.querySelector(".faltas").classList.remove("falta-vermelho");
+    }
+    if (extras === 0 && faltas === 0 && (normais + noturnas) > 0) {
+      row.querySelector(".horasTrabalhadas").classList.add("trabalhada-azul");
+    } else {
+      row.querySelector(".horasTrabalhadas").classList.remove("trabalhada-azul");
+    }
+
+    atualizarTotais();
+    return;
+  }
+
+  // 5. Situação "falta"
+  if (situacao === "falta") {
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText = "-";
+    row.querySelector(".faltas").innerText = `${Math.floor(jornadaMin/60)}h${(jornadaMin%60).toString().padStart(2,"0")}m`;
+    row.querySelector(".noturnas").innerText = "-";
+    
+    // Adiciona a classe para deixar o texto vermelho
+    row.querySelector(".faltas").classList.add("falta-vermelho");
+    
+    atualizarTotais();
+    return;
+  }
+
+  // 6. Cálculo normal para dias úteis e exceção em descanso
+  const minutosCompensados = normais + noturnas + abonoMin;
+  let extras = 0, faltas = 0;
+  if (minutosCompensados > jornadaMin + 10) {
+    extras = minutosCompensados - jornadaMin;
+  } else if (minutosCompensados > jornadaMin && minutosCompensados <= jornadaMin + 10) {
+    extras = 0;
+  } else if (minutosCompensados < jornadaMin - 10) {
+    faltas = jornadaMin - minutosCompensados;
+  }
+
+  const trabalhadas = normais + noturnas;
+  row.querySelector(".horasTrabalhadas").innerText =
+    `${Math.floor(trabalhadas/60)}h${(trabalhadas%60).toString().padStart(2,"0")}m`;
+  row.querySelector(".extras").innerText = extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+  row.querySelector(".faltas").innerText = faltas > 0 ? `${Math.floor(faltas/60)}h${(faltas%60).toString().padStart(2,"0")}m` : "-";
+  row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+  atualizarTotais();
+
+  // Limpa classes antigas
+  row.querySelector(".faltas").classList.remove("falta-vermelho");
+  row.querySelector(".horasAbonadas").classList.remove("abono-verde");
+  row.querySelector(".horasTrabalhadas").classList.remove("trabalhada-azul");
+
+  // Faltas em vermelho (só se for maior que zero)
+  const faltasCell = row.querySelector(".faltas");
+  if (
+    faltasCell.innerText !== "-" &&
+    faltasCell.innerText.trim() !== "" &&
+    !faltasCell.innerText.startsWith("0h00")
+  ) {
+    faltasCell.classList.add("falta-vermelho");
+  }
+
+  // Abonado em verde
+  if (situacao === "abonado" || situacao === "atestado") {
+    row.querySelector(".horasAbonadas").classList.add("abono-verde");
+  }
+
+  // Horas trabalhadas corretas em azul
+  if (
+    row.querySelector(".horasTrabalhadas").innerText !== "-" &&
+    extras === 0 && faltas === 0 && (normais + noturnas) > 0
+  ) {
+    row.querySelector(".horasTrabalhadas").classList.add("trabalhada-azul");
+  }
+}
+
+function getJornadaDiaSemana(diaSemana) {
+  // 0=Dom, 1=Seg, ..., 6=Sab
+  const ids = [
+    "jornada_dom", "jornada_seg", "jornada_ter", "jornada_qua",
+    "jornada_qui", "jornada_sex", "jornada_sab"
+  ];
+  return document.getElementById(ids[diaSemana]).value || "00:00";
+}
+
+function getDescansoSemanal() {
+  const checks = document.getElementsByName("descanso");
+  let dias = [];
+  for (let c of checks) if (c.checked) dias.push(parseInt(c.value));
+  return dias; // array de dias de descanso
+}
+
+// MANTENHA APENAS ESTA VERSÃO DA FUNÇÃO gerarTabela
+function gerarTabela() {
+  // NOVO: pega as datas inicial e final
+  const dataInicialStr = document.getElementById('dataInicial').value;
+  const dataFinalStr = document.getElementById('dataFinal').value;
+  let dataInicial, dataFinal;
+
+  if (dataInicialStr && dataFinalStr) {
+    dataInicial = new Date(dataInicialStr + "T00:00:00");
+    dataFinal = new Date(dataFinalStr + "T00:00:00");
+  } else {
+    // fallback para mês/ano se não preenchido
+    const mes = parseInt(document.getElementById('mes').value);
+    const ano = parseInt(document.getElementById('ano').value);
+    dataInicial = new Date(ano, mes, 1);
+    dataFinal = new Date(ano, mes + 1, 0);
+  }
+
+  const container = document.getElementById('tabelaContainer');
+  const descansoSemanal = getDescansoSemanal();
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>Dia</th><th>Semana</th>
+        <th>Situação</th>
+        <th>Entrada 1º</th><th>Saída 1º</th>
+        <th>Entrada 2º</th><th>Saída 2º</th>
+        <th>Horas Trabalhadas</th><th>Extras</th><th>Atrasos/Faltas</th>
+        <th>Horas Noturnas</th>
+        <th>Horas Abonadas</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  let d = new Date(dataInicial);
+  while (d.getTime() <= dataFinal.getTime()) {
+    const diaSemanaNum = d.getDay();
+    const diaSemana = d.toLocaleDateString("pt-BR", { weekday: 'long' });
+    const diaStr = `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}`;
+    const isDomingo = diaSemanaNum === 0;
+    const isFeriado = feriadosFixos.includes(diaStr);
+    const isDescanso = descansoSemanal.includes(diaSemanaNum);
+
+    // Adiciona a classe "folga" se for descanso
+    let classe = "";
+    if (isDomingo) classe = "domingo";
+    else if (isFeriado) classe = "feriado";
+    if (isDescanso) classe += (classe ? " " : "") + "folga";
+
+    html += `<tr class="${classe}">
+      <td>${d.getDate()}/${d.getMonth()+1}</td>
+      <td>${diaSemana}</td>
+      <td>
+        <select class="situacao" onchange="calcular(this)">
+          <option value="">-</option>
+          <option value="trabalho">Trabalho</option>
+          <option value="feriado">Feriado</option>
+          <option value="abonado">Abonado</option>
+          <option value="atestado">Atestado</option>
+          <option value="falta">Falta</option>
+          <option value="folga">Folga</option>
+          <option value="excecao">Exceção</option>
+        </select>
+      </td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td class="horasTrabalhadas"></td>
+      <td class="extras"></td>
+      <td class="faltas"></td>
+      <td class="noturnas"></td>
+      <td class="horasAbonadas"></td>
+    </tr>`;
+    d.setDate(d.getDate() + 1);
+  }
+
+  // Totalizadores
+  html += `</tbody>
+    <tfoot>
+      <tr style="font-weight:bold;background:#e9e9e9;">
+        <td colspan="7" style="text-align:right;">Totais:</td>
+        <td id="totalHoras"></td>
+        <td id="totalExtras"></td>
+        <td id="totalFaltas"></td>
+        <td id="totalNoturnas"></td>
+        <td id="totalAbonadas"></td>
+      </tr>
+      <tr style="font-weight:bold;background:#e0e0e0;">
+        <td colspan="7" style="text-align:right;">Total Jornada Prevista no Período:</td>
+        <td id="totalJornadaMes" colspan="5"></td>
+      </tr>
+    </tfoot>`;
+
+  html += "</table>";
+  
+  const painel = document.getElementById('painelPlanilha');
+  painel.innerHTML = html;
+  
+  // Atualiza as folgas na tabela
+  atualizarFolgasNaTabela();
+  
+  // Inicializa os totais
+  atualizarTotais();
+
+  // Atualiza o total de jornada prevista no período
+  const totalJornadaMesEl = document.getElementById("totalJornadaMes");
+  if (totalJornadaMesEl && dataInicial && dataFinal) {
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+}
+
+// Modifique a função gerarPlanilhaComValidacao
+function gerarPlanilhaComValidacao() {
+  // Gera a tabela
+  gerarTabela();
+  
+  // Mostra tanto o painel de configuração quanto a planilha
+  document.getElementById('painelConfig').style.display = '';
+  document.getElementById('painelPlanilha').style.display = '';
+  
+  // Reorganiza os elementos para que a configuração apareça abaixo da planilha
+  const container = document.querySelector('div[style*="display: flex"]');
+  if (container) {
+    container.style.flexDirection = 'column';
+    
+    // Move o painel da planilha para cima
+    const painelPlanilha = document.getElementById('painelPlanilha');
+    const painelConfig = document.getElementById('painelConfig');
+    if (painelPlanilha && painelConfig && container.contains(painelConfig) && container.contains(painelPlanilha)) {
+      container.insertBefore(painelPlanilha, painelConfig);
+    }
+  }
+  
+  // Altera o título do painel de configuração
+  const configTitle = document.querySelector('#painelConfig h4');
+  if (configTitle) {
+    configTitle.textContent = 'Configuração Semanal (não será impressa)';
+  }
+  
+  // Adiciona o botão de impressão
+  adicionarBotaoImprimir();
+  
+  // Rola para a tabela gerada
+  setTimeout(() => {
+    document.getElementById('painelPlanilha').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Modifique a função mostrarConfiguracoes para apenas rolar até a configuração
+function mostrarConfiguracoes() {
+  // Garantir que ambos os painéis estejam visíveis
+  document.getElementById('painelConfig').style.display = '';
+  document.getElementById('painelPlanilha').style.display = '';
+  
+  // Rolar até o painel de configuração
+  setTimeout(() => {
+    document.getElementById('painelConfig').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Modifique a função window.onload para iniciar com os dois painéis visíveis
+window.onload = function() {
+  // Define mês e ano atuais
+  const hoje = new Date();
+  
+  // Define datas padrão (início e fim do mês atual)
+  const dataInicialEl = document.getElementById('dataInicial');
+  const dataFinalEl = document.getElementById('dataFinal');
+  if (dataInicialEl && dataFinalEl) {
+    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    
+    dataInicialEl.value = primeiroDia.toISOString().split('T')[0];
+    dataFinalEl.value = ultimoDia.toISOString().split('T')[0];
+  }
+  
+  // Garantir que o mês e ano estejam definidos se os inputs existirem
+  const mesEl = document.getElementById('mes');
+  const anoEl = document.getElementById('ano');
+  if (mesEl && anoEl) {
+    mesEl.value = hoje.getMonth();
+    anoEl.value = hoje.getFullYear();
+  }
+  
+  // Iniciar com configuração visível
+  document.getElementById('painelConfig').style.display = 'block';
+  document.getElementById('painelPlanilha').style.display = 'none';
+  
+  // Alterar o título do painel de configuração já no início
+  const configTitle = document.querySelector('#painelConfig h4');
+  if (configTitle) {
+    configTitle.textContent = 'Configuração Semanal (não será impressa)';
+  }
+  
+  // Reorganizar o container flex para mostrar configuração em posição adequada
+  const container = document.querySelector('div[style*="display: flex"]');
+  if (container) {
+    container.style.flexDirection = 'column';
+    container.style.gap = '16px';
+  }
+  
+  // Garantir que o painel seja visível no início
+  document.getElementById('painelConfig').style.margin = '20px 0';
+  
+  // Inicializa o total semanal
+  atualizaTotalSemanal();
+  
+  // Verificação de termos
+  verificarTermos();
+};
+
+// Variável para armazenar a linha atual sendo abonada
+let linhaAtualAbono = null;
+
+// Função para abrir o modal de abono
+function abrirModalAbono(row) {
+  // Armazena a linha atual para usar quando confirmar
+  linhaAtualAbono = row;
+  
+  // Verifica se já existe um valor de abono e preenche o campo
+  const valorAtual = row.getAttribute('data-abono-min');
+  const inputAbono = document.getElementById('inputHorasAbonadas');
+  
+  if (valorAtual) {
+    const horas = Math.floor(valorAtual / 60);
+    const minutos = valorAtual % 60;
+    inputAbono.value = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+  } else {
+    inputAbono.value = "00:00";
+  }
+  
+  // Exibe o modal
+  const modal = document.getElementById('modalAbono');
+  modal.style.display = 'flex';
+}
+
+// Função para confirmar o abono
+function confirmarAbono() {
+  if (!linhaAtualAbono) return;
+  
+  // Pega o valor digitado no modal
+  const valorAbono = document.getElementById('inputHorasAbonadas').value;
+  
+  // Adiciona ou atualiza o campo de abono na linha
+  const celulaAbono = linhaAtualAbono.querySelector('.horasAbonadas');
+  
+  // Verifica se já existe um input para abono, senão cria
+  let inputAbono = celulaAbono.querySelector('input');
+  if (!inputAbono) {
+    inputAbono = document.createElement('input');
+    inputAbono.type = 'time';
+    inputAbono.onchange = function() { calcular(this); };
+    celulaAbono.innerHTML = '';
+    celulaAbono.appendChild(inputAbono);
+  }
+  
+  // Define o valor do abono
+  inputAbono.value = valorAbono;
+  
+  // Fecha o modal
+  fecharModalAbono();
+  
+  // Recalcula os valores
+  calcular(inputAbono);
+}
+
+// Função para fechar o modal
+function fecharModalAbono() {
+  document.getElementById('modalAbono').style.display = 'none';
+  linhaAtualAbono = null;
+}
+
+function atualizarTotais() {
+  // Busca a tabela dentro do painelPlanilha (corrigindo o seletor)
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+
+  // Inicializa os totais
+  let totalHorasTrabalhadas = 0;
+  let totalExtras = 0;
+  let totalFaltas = 0;
+  let totalNoturnas = 0;
+  let totalAbonadas = 0;
+
+  // Percorre todas as linhas do corpo da tabela
+  const linhas = tabela.querySelectorAll('tbody tr');
+  
+  for (let linha of linhas) {
+    // Função auxiliar para converter formato "XhYYm" para minutos
+    function converterParaMinutos(texto) {
+      if (!texto || texto === '-' || texto.trim() === '') return 0;
+      
+      // Extrai horas e minutos usando regex
+      const match = texto.match(/(\d+)h(\d+)m/);
+      if (match) {
+        const horas = parseInt(match[1]);
+        const minutos = parseInt(match[2]);
+        return horas * 60 + minutos;
+      }
+      return 0;
+    }
+    
+    // Extrai e soma os valores
+    const horasTrabalhadas = converterParaMinutos(linha.querySelector('.horasTrabalhadas').innerText);
+    const extras = converterParaMinutos(linha.querySelector('.extras').innerText);
+    const faltas = converterParaMinutos(linha.querySelector('.faltas').innerText);
+    const noturnas = converterParaMinutos(linha.querySelector('.noturnas').innerText);
+    
+    // Para horas abonadas, precisamos verificar se há um input
+    let abonadas = 0;
+    const celulaAbono = linha.querySelector('.horasAbonadas');
+    const inputAbono = celulaAbono.querySelector('input');
+    if (inputAbono && inputAbono.value) {
+      const [h, m] = inputAbono.value.split(':').map(Number);
+      abonadas = h * 60 + m;
+    } else if (linha.getAttribute('data-abono-min')) {
+      abonadas = parseInt(linha.getAttribute('data-abono-min'));
+    }
+    
+    // Acumula os totais
+    totalHorasTrabalhadas += horasTrabalhadas;
+    totalExtras += extras;
+    totalFaltas += faltas;
+    totalNoturnas += noturnas;
+    totalAbonadas += abonadas;
+  }
+  
+  // Função auxiliar para formatar minutos como "XhYYm"
+  function formatarMinutos(minutos) {
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
+    return `${horas}h${mins.toString().padStart(2, '0')}m`;
+  }
+  
+  // Atualiza os totais na tabela - corrigindo acesso direto aos elementos
+  const totalHorasEl = document.getElementById('totalHoras');
+  const totalExtrasEl = document.getElementById('totalExtras');
+  const totalFaltasEl = document.getElementById('totalFaltas');
+  const totalNoturnasEl = document.getElementById('totalNoturnas');
+  const totalAbonadasEl = document.getElementById('totalAbonadas');
+
+  if (totalHorasEl) totalHorasEl.innerText = formatarMinutos(totalHorasTrabalhadas);
+  if (totalExtrasEl) totalExtrasEl.innerText = formatarMinutos(totalExtras);
+  if (totalFaltasEl) totalFaltasEl.innerText = formatarMinutos(totalFaltas);
+  if (totalNoturnasEl) totalNoturnasEl.innerText = formatarMinutos(totalNoturnas);
+  if (totalAbonadasEl) totalAbonadasEl.innerText = formatarMinutos(totalAbonadas);
+}
+
+// Função para imprimir a planilha
+function adicionarBotaoImprimir() {
+  // Função já implementada no seu código
+}
+
+// Função simples para impressão
+function imprimir() {
+  window.print();
+}
+
+function atualizarFolgasNaTabela() {
+  const descanso = getDescansoSemanal(); // array de números dos dias de descanso
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+  const linhas = tabela.querySelectorAll('tbody tr');
+  for (let linha of linhas) {
+    // O dia da semana está na segunda coluna (índice 1)
+    const diaSemanaNome = linha.cells[1]?.innerText?.toLowerCase();
+    // Mapeamento para número do dia da semana (0=domingo, 1=segunda, ...)
+    const mapa = {
+      'domingo': 0, 'segunda-feira': 1, 'segunda': 1, 'terça-feira': 2, 'terça': 2,
+      'quarta-feira': 3, 'quarta': 3, 'quinta-feira': 4, 'quinta': 4,
+      'sexta-feira': 5, 'sexta': 5, 'sábado': 6, 'sabado': 6
+    };
+    const diaNum = mapa[diaSemanaNome];
+    if (descanso.includes(diaNum)) {
+      linha.classList.add('folga');
+    } else {
+      linha.classList.remove('folga');
+    }
+  }
+}
+
+// Função para atualizar o total semanal de jornada na configuração
+function atualizaTotalSemanal() {
+  let totalMinutos = 0;
+  const diasSemana = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+  
+  for (let i = 0; i < 7; i++) {
+    const jornadaInput = document.getElementById(`jornada_${diasSemana[i]}`);
+    const descansoCheck = document.querySelector(`input[name="descanso"][value="${i}"]`);
+    
+    if (jornadaInput && jornadaInput.value && (!descansoCheck || !descansoCheck.checked)) {
+      const [h, m] = jornadaInput.value.split(':').map(Number);
+      totalMinutos += h * 60 + m;
+    }
+  }
+  
+  const horas = Math.floor(totalMinutos / 60);
+  const minutos = totalMinutos % 60;
+  
+  const totalElement = document.getElementById('totalJornadaSemanal');
+  if (totalElement) {
+    totalElement.innerText = `Total Semanal: ${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+  
+  // Atualiza também o total de jornada do período se a planilha estiver visível
+  atualizarTotalJornadaPeriodo();
+}
+
+// Função para atualizar o total de jornada do período
+function atualizarTotalJornadaPeriodo() {
+  const totalJornadaMesEl = document.getElementById('totalJornadaMes');
+  if (!totalJornadaMesEl) return;
+  
+  const dataInicialStr = document.getElementById('dataInicial')?.value;
+  const dataFinalStr = document.getElementById('dataFinal')?.value;
+  
+  if (dataInicialStr && dataFinalStr) {
+    const dataInicial = new Date(dataInicialStr + "T00:00:00");
+    const dataFinal = new Date(dataFinalStr + "T00:00:00");
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+}
+
+// Função para recalcular todas as linhas da planilha quando a configuração muda
+function recalcularTodasAsLinhas() {
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+  
+  const linhas = tabela.querySelectorAll('tbody tr');
+  for (let linha of linhas) {
+    // Encontra o primeiro input de horário para disparar o recálculo
+    const primeiroInput = linha.querySelector('input[type="time"]');
+    if (primeiroInput) {
+      calcular(primeiroInput);
+    }
+  }
+}
+
+// Função para verificar termos de uso (placeholder)
+function verificarTermos() {
+  // Implementação dos termos de uso se necessária
+  // Por enquanto apenas uma função vazia para evitar erros
+  console.log('Verificação de termos executada');
+}
+
+// Função para aceitar termos (se o modal de termos for usado)
+function aceitarTermos() {
+  const modal = document.getElementById('termos-uso-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+</script>
+
+<style>
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 1cm 1cm 2cm 1cm; /* margem inferior maior para o rodapé */
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: white !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    #painelPlanilha {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      background: white !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    #painelPlanilha table {
+      width: 100% !important;
+      font-size: 11px !important;
+      table-layout: fixed;
+      page-break-inside: auto;
+    }
+    #painelPlanilha table thead,
+    #painelPlanilha table thead th {
+      position: static !important;
+      box-shadow: none !important;
+      background: #e9ecef !important;
+      color: #333 !important;
+    }
+    th, td {
+      padding: 4px 2px !important;
+      font-size: 11px !important;
+      word-break: break-word;
+      page-break-inside: avoid;
+    }
+    tr {
+      page-break-inside: avoid;
+    }
+    tr.domingo, tr.feriado {
+      border-left: none;
+    }
+    /* Oculta elementos que não precisam ser impressos */
+    #painelConfig, button, #copyright-notice {
+      display: none !important;
+    }
+    /* Mostra o rodapé de impressão com copyright */
+    #print-footer {
+      display: block !important;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100vw;
+      text-align: center;
+      font-size: 10px;
+      color: #999;
+      border-top: 1px solid #eee;
+      padding-top: 3px;
+      margin: 0;
+      background: white;
+      z-index: 9999;
+    }
+    body {
+      margin-bottom: 40px !important; /* espaço extra para o rodapé */
+    }
+  }
+
+  
+  /* Ajusta o espaçamento dos cabeçalhos para evitar lacunas */
+  #tabelaContainer table thead th {
+    border-bottom: 2px solid var(--primary-light);
+  }
+
+  /* Estiliza a barra de rolagem para melhor experiência visual */
+  #tabelaContainer::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-track {
+    background: var(--gray-200);
+    border-radius: 5px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 5px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+  }
+/* Classe para destacar dias de descanso (folga) */
+tr.folga {
+  background: #e6ffe6 !important; /* verde claro */
+  border-left: 3px solid #4bdb4b;
+}
+</style>
+
+</body>
+</html>
