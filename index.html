@@ -397,38 +397,38 @@ select {
       </tr>
       <tr>
         <td>Segunda-feira</td>
-        <td><input type="time" id="jornada_seg" value="08:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="1" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_seg" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="1" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Terça-feira</td>
-        <td><input type="time" id="jornada_ter" value="08:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="2" onchange="atualizaTotalSemanal()"; atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_ter" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="2" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Quarta-feira</td>
-        <td><input type="time" id="jornada_qua" value="08:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="3" onchange="atualizaTotalSemanal()"; atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_qua" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="3" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Quinta-feira</td>
-        <td><input type="time" id="jornada_qui" value="08:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="4" onchange="atualizaTotalSemanal()"; atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_qui" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="4" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Sexta-feira</td>
-        <td><input type="time" id="jornada_sex" value="08:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="5" onchange="atualizaTotalSemanal()"; atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_sex" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="5" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Sábado</td>
-        <td><input type="time" id="jornada_sab" value="04:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="6" onchange="atualizaTotalSemanal()"; atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_sab" value="04:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="6" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
       </tr>
       <tr>
         <td>Domingo</td>
-        <td><input type="time" id="jornada_dom" value="00:00" onchange="atualizaTotalSemanal()"></td>
-        <td><input type="checkbox" name="descanso" value="0" onchange="atualizaTotalSemanal()" checked atualizarFolgasNaTabela();"></td>
+        <td><input type="time" id="jornada_dom" value="00:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="0" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();" checked></td>
       </tr>
       <tr style="font-weight:bold;background:#e9e9e9;">
         <td colspan="3" id="totalJornadaSemanal" style="text-align:center;"></td>
@@ -559,32 +559,42 @@ function calcular(el) {
   const entrada2 = row.cells[5].querySelector("input").value;
   const saida2   = row.cells[6].querySelector("input").value;
 
-  // Descubra o dia da semana da linha
+  // Descubra o dia da semana da linha usando a data correta
   const rowIndex = row.rowIndex - 1;
-  let ano, mes, data, diaSemanaNum;
+  let diaSemanaNum, dataAtual;
+  
   const dataInicialEl = document.getElementById('dataInicial');
   if (dataInicialEl && dataInicialEl.value) {
     const dataInicialObj = new Date(dataInicialEl.value + "T00:00:00");
-    const tempData = new Date(dataInicialObj);
-    tempData.setDate(dataInicialObj.getDate() + rowIndex);
-
-    ano = tempData.getFullYear();
-    mes = tempData.getMonth();
-    data = tempData;
-    diaSemanaNum = tempData.getDay();
+    dataAtual = new Date(dataInicialObj);
+    dataAtual.setDate(dataInicialObj.getDate() + rowIndex);
+    diaSemanaNum = dataAtual.getDay();
   } else {
-    ano = parseInt(document.getElementById('ano').value);
-    mes = parseInt(document.getElementById('mes').value);
-    data = new Date(ano, mes, rowIndex + 1);
-    diaSemanaNum = data.getDay();
+    // fallback para método antigo se não houver data inicial
+    const mesEl = document.getElementById('mes');
+    const anoEl = document.getElementById('ano');
+    if (mesEl && anoEl) {
+      const ano = parseInt(anoEl.value);
+      const mes = parseInt(mesEl.value);
+      dataAtual = new Date(ano, mes, rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    } else {
+      // último fallback - use a data atual
+      const hoje = new Date();
+      dataAtual = new Date(hoje.getFullYear(), hoje.getMonth(), rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    }
   }
 
   const descansoSemanal = getDescansoSemanal();
   const isDomingo = diaSemanaNum === 0;
   const isFeriado = (() => {
-    const d = (rowIndex + 1).toString().padStart(2, '0');
-    const m = (mes + 1).toString().padStart(2, '0');
-    return feriadosFixos.includes(`${d}-${m}`);
+    if (dataAtual) {
+      const d = dataAtual.getDate().toString().padStart(2, '0');
+      const m = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+      return feriadosFixos.includes(`${d}-${m}`);
+    }
+    return false;
   })();
   const isDescanso = descansoSemanal.includes(diaSemanaNum);
 
@@ -890,16 +900,22 @@ function gerarTabela() {
   html += "</table>";
   
   const painel = document.getElementById('painelPlanilha');
-painel.innerHTML = html;
-atualizarFolgasNaTabela();
+  painel.innerHTML = html;
   
-  // Adicionar esta linha para inicializar os totais
+  // Atualiza as folgas na tabela
+  atualizarFolgasNaTabela();
+  
+  // Inicializa os totais
   atualizarTotais();
 
   // Atualiza o total de jornada prevista no período
-  document.getElementById("totalJornadaMes").innerText =
-    Math.floor(calcularTotalJornadaPeriodo(dataInicial, dataFinal)/60) + "h" +
-    (calcularTotalJornadaPeriodo(dataInicial, dataFinal)%60).toString().padStart(2,"0") + "m";
+  const totalJornadaMesEl = document.getElementById("totalJornadaMes");
+  if (totalJornadaMesEl && dataInicial && dataFinal) {
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
 }
 
 // Modifique a função gerarPlanilhaComValidacao
@@ -956,6 +972,17 @@ window.onload = function() {
   // Define mês e ano atuais
   const hoje = new Date();
   
+  // Define datas padrão (início e fim do mês atual)
+  const dataInicialEl = document.getElementById('dataInicial');
+  const dataFinalEl = document.getElementById('dataFinal');
+  if (dataInicialEl && dataFinalEl) {
+    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    
+    dataInicialEl.value = primeiroDia.toISOString().split('T')[0];
+    dataFinalEl.value = ultimoDia.toISOString().split('T')[0];
+  }
+  
   // Garantir que o mês e ano estejam definidos se os inputs existirem
   const mesEl = document.getElementById('mes');
   const anoEl = document.getElementById('ano');
@@ -984,6 +1011,7 @@ window.onload = function() {
   // Garantir que o painel seja visível no início
   document.getElementById('painelConfig').style.margin = '20px 0';
   
+  // Inicializa o total semanal
   atualizaTotalSemanal();
   
   // Verificação de termos
@@ -1157,6 +1185,81 @@ function atualizarFolgasNaTabela() {
     } else {
       linha.classList.remove('folga');
     }
+  }
+}
+
+// Função para atualizar o total semanal de jornada na configuração
+function atualizaTotalSemanal() {
+  let totalMinutos = 0;
+  const diasSemana = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+  
+  for (let i = 0; i < 7; i++) {
+    const jornadaInput = document.getElementById(`jornada_${diasSemana[i]}`);
+    const descansoCheck = document.querySelector(`input[name="descanso"][value="${i}"]`);
+    
+    if (jornadaInput && jornadaInput.value && (!descansoCheck || !descansoCheck.checked)) {
+      const [h, m] = jornadaInput.value.split(':').map(Number);
+      totalMinutos += h * 60 + m;
+    }
+  }
+  
+  const horas = Math.floor(totalMinutos / 60);
+  const minutos = totalMinutos % 60;
+  
+  const totalElement = document.getElementById('totalJornadaSemanal');
+  if (totalElement) {
+    totalElement.innerText = `Total Semanal: ${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+  
+  // Atualiza também o total de jornada do período se a planilha estiver visível
+  atualizarTotalJornadaPeriodo();
+}
+
+// Função para atualizar o total de jornada do período
+function atualizarTotalJornadaPeriodo() {
+  const totalJornadaMesEl = document.getElementById('totalJornadaMes');
+  if (!totalJornadaMesEl) return;
+  
+  const dataInicialStr = document.getElementById('dataInicial')?.value;
+  const dataFinalStr = document.getElementById('dataFinal')?.value;
+  
+  if (dataInicialStr && dataFinalStr) {
+    const dataInicial = new Date(dataInicialStr + "T00:00:00");
+    const dataFinal = new Date(dataFinalStr + "T00:00:00");
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+}
+
+// Função para recalcular todas as linhas da planilha quando a configuração muda
+function recalcularTodasAsLinhas() {
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+  
+  const linhas = tabela.querySelectorAll('tbody tr');
+  for (let linha of linhas) {
+    // Encontra o primeiro input de horário para disparar o recálculo
+    const primeiroInput = linha.querySelector('input[type="time"]');
+    if (primeiroInput) {
+      calcular(primeiroInput);
+    }
+  }
+}
+
+// Função para verificar termos de uso (placeholder)
+function verificarTermos() {
+  // Implementação dos termos de uso se necessária
+  // Por enquanto apenas uma função vazia para evitar erros
+  console.log('Verificação de termos executada');
+}
+
+// Função para aceitar termos (se o modal de termos for usado)
+function aceitarTermos() {
+  const modal = document.getElementById('termos-uso-modal');
+  if (modal) {
+    modal.style.display = 'none';
   }
 }
 </script>
