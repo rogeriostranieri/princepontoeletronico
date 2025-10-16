@@ -389,6 +389,9 @@ select {
   <button onclick="gerarPlanilhaComValidacao()" style="padding:8px 24px; font-size:16px;">Gerar Planilha</button>
   <button id="btnConfig" onclick="mostrarConfiguracoes()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Configuração Semanal</button>
   <button onclick="window.print()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Imprimir</button>
+  <button onclick="salvarDados()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
+  <button onclick="document.getElementById('fileInput').click()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);">📂 Carregar Dados</button>
+  <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="carregarDados(event)">
 </div>
 
 <div style="display: flex; gap: 32px;">
@@ -1284,6 +1287,358 @@ function aceitarTermos() {
     modal.style.display = 'none';
   }
 }
+
+// ========== FUNÇÕES DE SALVAR E CARREGAR DADOS ==========
+
+/**
+ * Salva todos os dados da planilha em um arquivo TXT
+ */
+function salvarDados() {
+  try {
+    // Cria objeto com todos os dados
+    const dados = {
+      versao: '1.0',
+      dataExportacao: new Date().toISOString(),
+      
+      // Informações do funcionário e empresa
+      informacoesPessoais: {
+        empresa: document.getElementById('empresa')?.value || '',
+        funcionario: document.getElementById('funcionario')?.value || ''
+      },
+      
+      // Dados das configurações de período
+      configuracaoPeriodo: {
+        dataInicial: document.getElementById('dataInicial')?.value || '',
+        dataFinal: document.getElementById('dataFinal')?.value || '',
+        mes: document.getElementById('mes')?.value || '',
+        ano: document.getElementById('ano')?.value || ''
+      },
+      
+      // Configuração semanal de jornada
+      configuracaoSemanal: {
+        segunda: {
+          jornada: document.getElementById('jornada_seg')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="1"]')?.checked || false
+        },
+        terca: {
+          jornada: document.getElementById('jornada_ter')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="2"]')?.checked || false
+        },
+        quarta: {
+          jornada: document.getElementById('jornada_qua')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="3"]')?.checked || false
+        },
+        quinta: {
+          jornada: document.getElementById('jornada_qui')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="4"]')?.checked || false
+        },
+        sexta: {
+          jornada: document.getElementById('jornada_sex')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="5"]')?.checked || false
+        },
+        sabado: {
+          jornada: document.getElementById('jornada_sab')?.value || '04:00',
+          descanso: document.querySelector('input[name="descanso"][value="6"]')?.checked || false
+        },
+        domingo: {
+          jornada: document.getElementById('jornada_dom')?.value || '00:00',
+          descanso: document.querySelector('input[name="descanso"][value="0"]')?.checked || false
+        }
+      },
+      
+      // Dados da planilha
+      registros: []
+    };
+    
+    // Captura todos os registros da tabela
+    const tabela = document.querySelector('#painelPlanilha table');
+    if (tabela) {
+      const linhas = tabela.querySelectorAll('tbody tr');
+      
+      linhas.forEach((linha, index) => {
+        const registro = {
+          linha: index + 1,
+          dia: linha.cells[0]?.innerText || '',
+          diaSemana: linha.cells[1]?.innerText || '',
+          situacao: linha.cells[2]?.querySelector('select')?.value || '',
+          entrada1: linha.cells[3]?.querySelector('input')?.value || '',
+          saida1: linha.cells[4]?.querySelector('input')?.value || '',
+          entrada2: linha.cells[5]?.querySelector('input')?.value || '',
+          saida2: linha.cells[6]?.querySelector('input')?.value || '',
+          horasTrabalhadas: linha.querySelector('.horasTrabalhadas')?.innerText || '',
+          extras: linha.querySelector('.extras')?.innerText || '',
+          faltas: linha.querySelector('.faltas')?.innerText || '',
+          noturnas: linha.querySelector('.noturnas')?.innerText || '',
+          horasAbonadas: linha.querySelector('.horasAbonadas input')?.value || '',
+          classes: linha.className || ''
+        };
+        
+        dados.registros.push(registro);
+      });
+    }
+    
+    // Converte para JSON formatado (mais legível)
+    const jsonString = JSON.stringify(dados, null, 2);
+    
+    // Cria o arquivo para download
+    const blob = new Blob([jsonString], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Nome do arquivo: Nome_AAAAMMDD.txt
+    const nomeFuncionario = document.getElementById('funcionario')?.value || 'Sem_Nome';
+    
+    // Limpa o nome do funcionário (remove caracteres especiais e espaços)
+    const nomeLimpo = nomeFuncionario
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^a-zA-Z0-9]/g, '_')    // Substitui caracteres especiais por _
+      .replace(/_+/g, '_')               // Remove underscores duplicados
+      .replace(/^_|_$/g, '')             // Remove underscores no início e fim
+      .substring(0, 30);                 // Limita a 30 caracteres
+    
+    // Formato da data: AAAAMMDD (usa data atual do dispositivo)
+    const hoje = new Date();
+    const periodoStr = `${hoje.getFullYear()}${(hoje.getMonth()+1).toString().padStart(2,'0')}${hoje.getDate().toString().padStart(2,'0')}`;
+    
+    // Monta o nome do arquivo: Nome_AAAAMMDD.txt
+    const nomeArquivo = `${nomeLimpo}_${periodoStr}.txt`;
+    
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+    
+    // Limpa a URL temporária
+    URL.revokeObjectURL(url);
+    
+    alert('✅ Dados salvos com sucesso!\n\nArquivo: ' + nomeArquivo);
+    
+  } catch (erro) {
+    console.error('Erro ao salvar dados:', erro);
+    alert('❌ Erro ao salvar dados. Verifique o console para mais detalhes.');
+  }
+}
+
+/**
+ * Carrega dados de um arquivo TXT previamente salvo
+ */
+function carregarDados(evento) {
+  const arquivo = evento.target.files[0];
+  
+  if (!arquivo) {
+    return;
+  }
+  
+  // Verifica se é um arquivo TXT
+  if (!arquivo.name.endsWith('.txt')) {
+    alert('⚠️ Por favor, selecione um arquivo .txt válido!');
+    return;
+  }
+  
+  const leitor = new FileReader();
+  
+  leitor.onload = function(e) {
+    try {
+      // Parse do JSON
+      const dados = JSON.parse(e.target.result);
+      
+      // Valida a versão
+      if (!dados.versao) {
+        throw new Error('Arquivo inválido: versão não encontrada');
+      }
+      
+      // Restaura informações do funcionário e empresa
+      if (dados.informacoesPessoais) {
+        if (dados.informacoesPessoais.empresa) {
+          const empresaEl = document.getElementById('empresa');
+          if (empresaEl) empresaEl.value = dados.informacoesPessoais.empresa;
+        }
+        
+        if (dados.informacoesPessoais.funcionario) {
+          const funcionarioEl = document.getElementById('funcionario');
+          if (funcionarioEl) funcionarioEl.value = dados.informacoesPessoais.funcionario;
+        }
+      }
+      
+      // Restaura as configurações de período
+      if (dados.configuracaoPeriodo) {
+        if (dados.configuracaoPeriodo.dataInicial) {
+          const dataInicialEl = document.getElementById('dataInicial');
+          if (dataInicialEl) dataInicialEl.value = dados.configuracaoPeriodo.dataInicial;
+        }
+        
+        if (dados.configuracaoPeriodo.dataFinal) {
+          const dataFinalEl = document.getElementById('dataFinal');
+          if (dataFinalEl) dataFinalEl.value = dados.configuracaoPeriodo.dataFinal;
+        }
+        
+        if (dados.configuracaoPeriodo.mes) {
+          const mesEl = document.getElementById('mes');
+          if (mesEl) mesEl.value = dados.configuracaoPeriodo.mes;
+        }
+        
+        if (dados.configuracaoPeriodo.ano) {
+          const anoEl = document.getElementById('ano');
+          if (anoEl) anoEl.value = dados.configuracaoPeriodo.ano;
+        }
+      }
+      
+      // Restaura a configuração semanal
+      if (dados.configuracaoSemanal) {
+        // Segunda
+        if (dados.configuracaoSemanal.segunda) {
+          document.getElementById('jornada_seg').value = dados.configuracaoSemanal.segunda.jornada;
+          document.querySelector('input[name="descanso"][value="1"]').checked = dados.configuracaoSemanal.segunda.descanso;
+        }
+        
+        // Terça
+        if (dados.configuracaoSemanal.terca) {
+          document.getElementById('jornada_ter').value = dados.configuracaoSemanal.terca.jornada;
+          document.querySelector('input[name="descanso"][value="2"]').checked = dados.configuracaoSemanal.terca.descanso;
+        }
+        
+        // Quarta
+        if (dados.configuracaoSemanal.quarta) {
+          document.getElementById('jornada_qua').value = dados.configuracaoSemanal.quarta.jornada;
+          document.querySelector('input[name="descanso"][value="3"]').checked = dados.configuracaoSemanal.quarta.descanso;
+        }
+        
+        // Quinta
+        if (dados.configuracaoSemanal.quinta) {
+          document.getElementById('jornada_qui').value = dados.configuracaoSemanal.quinta.jornada;
+          document.querySelector('input[name="descanso"][value="4"]').checked = dados.configuracaoSemanal.quinta.descanso;
+        }
+        
+        // Sexta
+        if (dados.configuracaoSemanal.sexta) {
+          document.getElementById('jornada_sex').value = dados.configuracaoSemanal.sexta.jornada;
+          document.querySelector('input[name="descanso"][value="5"]').checked = dados.configuracaoSemanal.sexta.descanso;
+        }
+        
+        // Sábado
+        if (dados.configuracaoSemanal.sabado) {
+          document.getElementById('jornada_sab').value = dados.configuracaoSemanal.sabado.jornada;
+          document.querySelector('input[name="descanso"][value="6"]').checked = dados.configuracaoSemanal.sabado.descanso;
+        }
+        
+        // Domingo
+        if (dados.configuracaoSemanal.domingo) {
+          document.getElementById('jornada_dom').value = dados.configuracaoSemanal.domingo.jornada;
+          document.querySelector('input[name="descanso"][value="0"]').checked = dados.configuracaoSemanal.domingo.descanso;
+        }
+        
+        // Atualiza o total semanal
+        atualizaTotalSemanal();
+      }
+      
+      // Gera a planilha primeiro
+      gerarPlanilhaComValidacao();
+      
+      // Aguarda um pouco para garantir que a tabela foi gerada
+      setTimeout(() => {
+        // Restaura os dados da planilha
+        if (dados.registros && dados.registros.length > 0) {
+          const tabela = document.querySelector('#painelPlanilha table');
+          
+          if (tabela) {
+            const linhas = tabela.querySelectorAll('tbody tr');
+            
+            dados.registros.forEach((registro, index) => {
+              if (index < linhas.length) {
+                const linha = linhas[index];
+                
+                // Restaura a situação
+                const selectSituacao = linha.cells[2]?.querySelector('select');
+                if (selectSituacao && registro.situacao) {
+                  selectSituacao.value = registro.situacao;
+                }
+                
+                // Restaura os horários
+                if (registro.entrada1) {
+                  const inputEntrada1 = linha.cells[3]?.querySelector('input');
+                  if (inputEntrada1) inputEntrada1.value = registro.entrada1;
+                }
+                
+                if (registro.saida1) {
+                  const inputSaida1 = linha.cells[4]?.querySelector('input');
+                  if (inputSaida1) inputSaida1.value = registro.saida1;
+                }
+                
+                if (registro.entrada2) {
+                  const inputEntrada2 = linha.cells[5]?.querySelector('input');
+                  if (inputEntrada2) inputEntrada2.value = registro.entrada2;
+                }
+                
+                if (registro.saida2) {
+                  const inputSaida2 = linha.cells[6]?.querySelector('input');
+                  if (inputSaida2) inputSaida2.value = registro.saida2;
+                }
+                
+                // Restaura horas abonadas se existir
+                if (registro.horasAbonadas) {
+                  const celulaAbono = linha.querySelector('.horasAbonadas');
+                  if (celulaAbono) {
+                    let inputAbono = celulaAbono.querySelector('input');
+                    if (!inputAbono) {
+                      inputAbono = document.createElement('input');
+                      inputAbono.type = 'time';
+                      inputAbono.onchange = function() { calcular(this); };
+                      celulaAbono.innerHTML = '';
+                      celulaAbono.appendChild(inputAbono);
+                    }
+                    inputAbono.value = registro.horasAbonadas;
+                  }
+                }
+                
+                // Recalcula a linha
+                const primeiroInput = linha.querySelector('input[type="time"]');
+                if (primeiroInput) {
+                  calcular(primeiroInput);
+                }
+              }
+            });
+            
+            // Atualiza os totais finais
+            atualizarTotais();
+          }
+        }
+        
+        // Monta mensagem de sucesso com informações do funcionário
+        let mensagem = '✅ Dados carregados com sucesso!\n\n';
+        
+        if (dados.informacoesPessoais) {
+          if (dados.informacoesPessoais.funcionario) {
+            mensagem += '👤 Funcionário: ' + dados.informacoesPessoais.funcionario + '\n';
+          }
+          if (dados.informacoesPessoais.empresa) {
+            mensagem += '🏢 Empresa: ' + dados.informacoesPessoais.empresa + '\n';
+          }
+          mensagem += '\n';
+        }
+        
+        mensagem += '📅 Data da exportação: ' + new Date(dados.dataExportacao).toLocaleString('pt-BR') + '\n';
+        mensagem += '📋 Registros carregados: ' + dados.registros.length;
+        
+        alert(mensagem);
+        
+      }, 500);
+      
+    } catch (erro) {
+      console.error('Erro ao carregar dados:', erro);
+      alert('❌ Erro ao carregar dados.\n\nVerifique se o arquivo é válido e não foi corrompido.\n\nDetalhes: ' + erro.message);
+    }
+  };
+  
+  leitor.onerror = function() {
+    alert('❌ Erro ao ler o arquivo. Tente novamente.');
+  };
+  
+  // Lê o arquivo como texto
+  leitor.readAsText(arquivo);
+  
+  // Limpa o input para permitir carregar o mesmo arquivo novamente
+  evento.target.value = '';
+}
 </script>
 
 <style>
@@ -1387,6 +1742,44 @@ function aceitarTermos() {
 tr.folga {
   background: #e6ffe6 !important; /* verde claro */
   border-left: 3px solid #4bdb4b;
+}
+
+/* Estilos especiais para os botões de salvar e carregar */
+button[onclick*="salvarDados"] {
+  background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%) !important;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+}
+
+button[onclick*="salvarDados"]:hover {
+  background: linear-gradient(90deg, #4caf50 60%, #66bb6a 100%) !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+  transform: translateY(-2px);
+}
+
+button[onclick*="fileInput"] {
+  background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%) !important;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+button[onclick*="fileInput"]:hover {
+  background: linear-gradient(90deg, #42a5f5 60%, #64b5f6 100%) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Animação de pulso para destacar os novos botões */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(46, 125, 50, 0.6);
+  }
+}
+
+button[onclick*="salvarDados"],
+button[onclick*="fileInput"] {
+  animation: pulse 2s ease-in-out 3;
 }
 </style>
 
