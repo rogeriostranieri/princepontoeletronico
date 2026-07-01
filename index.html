@@ -252,6 +252,21 @@ select {
   box-shadow: var(--shadow-sm);
 }
 
+/* Transições suaves para o aviso */
+#aviso-conteudo, #aviso-minimizado {
+  transition: opacity 0.3s ease;
+}
+
+/* Animação para o botão de mostrar termos */
+#aviso-minimizado button {
+  transition: all 0.2s ease;
+}
+
+#aviso-minimizado button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+}
+
 /* Animações sutis */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -339,15 +354,25 @@ select {
 <body>
 
 <!-- Aviso de isenção de responsabilidade -->
-<div id="copyright-notice" style="text-align:center; margin-bottom:20px; font-size:14px; border-bottom:1px solid #ddd; padding-bottom:10px;">
-  <strong>Sistema de Controle de Ponto</strong> &copy; 2025 Rogério Stranieri.<br>
-  <span style="color:#2e7d32;font-weight:bold;">Distribuição gratuita e uso permitido.</span>
-  <div style="font-size:12px; color:#777; margin-top:5px;">
-    Este sistema é disponibilizado "no estado em que se encontra", sem garantias de funcionamento, precisão ou adequação a qualquer finalidade.  
-    O autor não se responsabiliza por perdas, erros, dados incorretos ou mau uso por parte do usuário.
+<div id="copyright-notice" style="text-align:center; margin-bottom:20px; font-size:14px; border-bottom:1px solid #ddd; padding-bottom:10px; transition: all 0.3s ease;">
+  <div id="aviso-conteudo" style="display: block;">
+    <strong>Sistema de Controle de Ponto</strong> &copy; 2025 Rogério Stranieri.<br>
+    <span style="color:#2e7d32;font-weight:bold;">Distribuição gratuita e uso permitido.</span>
+    <div style="font-size:12px; color:#777; margin-top:5px;">
+      Este sistema é disponibilizado "no estado em que se encontra", sem garantias de funcionamento, precisão ou adequação a qualquer finalidade.  
+      O autor não se responsabiliza por perdas, erros, dados incorretos ou mau uso por parte do usuário.
+    </div>
+    <div style="font-size:12px; color:#888; margin-top:10px;">
+      Licenciado sob os termos da <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Licença Apache 2.0</a>.
+    </div>
+    <button onclick="concordarTermos()" style="margin-top:15px; padding:8px 20px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%); color:white; border:none; border-radius:5px; cursor:pointer; font-size:14px; font-weight:bold;">
+      ✓ Li e concordo
+    </button>
   </div>
-  <div style="font-size:12px; color:#888; margin-top:10px;">
-    Licenciado sob os termos da <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Licença Apache 2.0</a>.
+  <div id="aviso-minimizado" style="display: none;">
+    <button onclick="mostrarTermos()" style="padding:6px 16px; background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%); color:white; border:none; border-radius:5px; cursor:pointer; font-size:13px;">
+      📜 Mostrar Termos de Uso
+    </button>
   </div>
 </div>
 
@@ -1265,6 +1290,44 @@ function verificarTermos() {
   // Implementação dos termos de uso se necessária
   // Por enquanto apenas uma função vazia para evitar erros
   console.log('Verificação de termos executada');
+}
+
+// Função para concordar com os termos e minimizar o aviso
+function concordarTermos() {
+  const avisoConteudo = document.getElementById('aviso-conteudo');
+  const avisoMinimizado = document.getElementById('aviso-minimizado');
+  
+  // Efeito de transição suave
+  avisoConteudo.style.opacity = '0';
+  
+  setTimeout(() => {
+    avisoConteudo.style.display = 'none';
+    avisoMinimizado.style.display = 'block';
+    avisoMinimizado.style.opacity = '0';
+    
+    setTimeout(() => {
+      avisoMinimizado.style.opacity = '1';
+    }, 50);
+  }, 300);
+}
+
+// Função para mostrar novamente os termos
+function mostrarTermos() {
+  const avisoConteudo = document.getElementById('aviso-conteudo');
+  const avisoMinimizado = document.getElementById('aviso-minimizado');
+  
+  // Efeito de transição suave
+  avisoMinimizado.style.opacity = '0';
+  
+  setTimeout(() => {
+    avisoMinimizado.style.display = 'none';
+    avisoConteudo.style.display = 'block';
+    avisoConteudo.style.opacity = '0';
+    
+    setTimeout(() => {
+      avisoConteudo.style.opacity = '1';
+    }, 50);
+  }, 300);
 }
 
 // Função para aceitar termos (se o modal de termos for usado)
