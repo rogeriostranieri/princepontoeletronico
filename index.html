@@ -401,9 +401,10 @@ select {
   <button onclick="gerarPlanilhaComValidacao()" style="padding:8px 24px; font-size:16px;">Gerar Planilha</button>
   <button id="btnConfig" onclick="mostrarConfiguracoes()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Configuração Semanal</button>
   <button onclick="window.print()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Imprimir</button>
-  <button onclick="salvarDados()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
+  <button onclick="abrirModalSalvar()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
   <button onclick="document.getElementById('fileInput').click()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);">📂 Carregar Dados</button>
   <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="carregarDados(event)">
+  <button onclick="abrirWhatsApp()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #25D366 60%, #128C7E 100%);">💬 Dúvidas WhatsApp</button>
 </div>
 
 <div style="display: flex; gap: 32px;">
@@ -476,6 +477,33 @@ select {
 
 <div id="print-footer" style="display:none">
   <p>&copy; 2025 Rogério Stranieri. Todos os direitos reservados.</p>
+</div>
+
+<!-- Modal: Salvar ou Enviar Dados -->
+<div id="modalSalvar" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);z-index:2000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.22);width:390px;max-width:92vw;overflow:hidden;">
+    <div style="background:#2a4d69;padding:18px 22px;">
+      <div style="color:#fff;font-size:17px;font-weight:700;">💾 Salvar Dados do Ponto</div>
+      <div style="color:#9fbfcf;font-size:12px;margin-top:3px;">Escolha como deseja salvar a planilha</div>
+    </div>
+    <div style="padding:20px 22px;">
+      <button onclick="salvarLocalmente()" class="btn-modal-opcao" style="background:linear-gradient(90deg,#2e7d32 60%,#4caf50 100%);">
+        <span style="font-size:24px;line-height:1;">💾</span>
+        <span>
+          <strong style="display:block;font-size:15px;">Salvar Localmente</strong>
+          <small>Baixa o arquivo .txt no seu dispositivo</small>
+        </span>
+      </button>
+      <button id="btn-enviar-email" onclick="enviarPorEmail()" class="btn-modal-opcao" style="background:linear-gradient(90deg,#1565c0 60%,#42a5f5 100%);margin-top:10px;">
+        <span style="font-size:24px;line-height:1;">📧</span>
+        <span>
+          <strong style="display:block;font-size:15px;">Enviar por Email</strong>
+          <small>Envia ao escritório Betel com o arquivo .txt em anexo</small>
+        </span>
+      </button>
+      <button onclick="fecharModalSalvar()" style="width:100%;margin-top:14px;padding:9px;background:#888;border-radius:6px;font-size:14px;color:#fff;border:none;cursor:pointer;font-weight:600;">Cancelar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1685,9 +1713,232 @@ function carregarDados(evento) {
   
   // Lê o arquivo como texto
   leitor.readAsText(arquivo);
-  
+
   // Limpa o input para permitir carregar o mesmo arquivo novamente
   evento.target.value = '';
+}
+
+// ─── PONTO — Salvar / Enviar / WhatsApp ──────────────────────────────────────
+
+// <<< Após implantar o Ponto.gs, cole a URL aqui >>>
+const PONTO_GAS_URL = "https://script.google.com/macros/s/AKfycbwTK3mjmFIRwQb6IqbgLCW6zIViPDBqkBSkJrt56okkKFvykGy-72v6ixGPA-bLRstjjw/exec";
+
+function abrirModalSalvar() {
+  if (!document.querySelector('#painelPlanilha table')) {
+    alert('⚠️ Gere a planilha antes de salvar os dados.');
+    return;
+  }
+  document.getElementById('modalSalvar').style.display = 'flex';
+}
+
+function fecharModalSalvar() {
+  document.getElementById('modalSalvar').style.display = 'none';
+}
+
+function salvarLocalmente() {
+  fecharModalSalvar();
+  salvarDados();
+}
+
+function _fmt2(n) { return String(n).padStart(2, '0'); }
+
+function formatarDataBR(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function gerarPeriodoStr() {
+  const di = document.getElementById('dataInicial')?.value || '';
+  const df = document.getElementById('dataFinal')?.value   || '';
+  return (di && df) ? `${formatarDataBR(di)} a ${formatarDataBR(df)}` : '—';
+}
+
+function gerarDadosTxtObj() {
+  const dados = {
+    versao: '1.0',
+    dataExportacao: new Date().toISOString(),
+    informacoesPessoais: {
+      empresa:     document.getElementById('empresa')?.value     || '',
+      funcionario: document.getElementById('funcionario')?.value || ''
+    },
+    configuracaoPeriodo: {
+      dataInicial: document.getElementById('dataInicial')?.value || '',
+      dataFinal:   document.getElementById('dataFinal')?.value   || ''
+    },
+    configuracaoSemanal: {
+      segunda: { jornada: document.getElementById('jornada_seg')?.value||'08:00', descanso: document.querySelector('input[name="descanso"][value="1"]')?.checked||false },
+      terca:   { jornada: document.getElementById('jornada_ter')?.value||'08:00', descanso: document.querySelector('input[name="descanso"][value="2"]')?.checked||false },
+      quarta:  { jornada: document.getElementById('jornada_qua')?.value||'08:00', descanso: document.querySelector('input[name="descanso"][value="3"]')?.checked||false },
+      quinta:  { jornada: document.getElementById('jornada_qui')?.value||'08:00', descanso: document.querySelector('input[name="descanso"][value="4"]')?.checked||false },
+      sexta:   { jornada: document.getElementById('jornada_sex')?.value||'08:00', descanso: document.querySelector('input[name="descanso"][value="5"]')?.checked||false },
+      sabado:  { jornada: document.getElementById('jornada_sab')?.value||'04:00', descanso: document.querySelector('input[name="descanso"][value="6"]')?.checked||false },
+      domingo: { jornada: document.getElementById('jornada_dom')?.value||'00:00', descanso: document.querySelector('input[name="descanso"][value="0"]')?.checked||false }
+    },
+    registros: []
+  };
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (tabela) {
+    tabela.querySelectorAll('tbody tr').forEach((linha, idx) => {
+      dados.registros.push({
+        linha:            idx + 1,
+        dia:              linha.cells[0]?.innerText || '',
+        diaSemana:        linha.cells[1]?.innerText || '',
+        situacao:         linha.cells[2]?.querySelector('select')?.value || '',
+        entrada1:         linha.cells[3]?.querySelector('input')?.value  || '',
+        saida1:           linha.cells[4]?.querySelector('input')?.value  || '',
+        entrada2:         linha.cells[5]?.querySelector('input')?.value  || '',
+        saida2:           linha.cells[6]?.querySelector('input')?.value  || '',
+        horasTrabalhadas: linha.querySelector('.horasTrabalhadas')?.innerText || '',
+        extras:           linha.querySelector('.extras')?.innerText           || '',
+        faltas:           linha.querySelector('.faltas')?.innerText           || '',
+        noturnas:         linha.querySelector('.noturnas')?.innerText         || '',
+        horasAbonadas:    linha.querySelector('.horasAbonadas input')?.value  || '',
+        classes:          linha.className || ''
+      });
+    });
+  }
+  const fn = (document.getElementById('funcionario')?.value || 'Sem_Nome')
+    .normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9]/g,'_')
+    .replace(/_+/g,'_').replace(/^_|_$/g,'').substring(0,30);
+  const h = new Date();
+  const stamp = `${h.getFullYear()}${_fmt2(h.getMonth()+1)}${_fmt2(h.getDate())}`;
+  return { jsonString: JSON.stringify(dados, null, 2), nomeArquivo: `${fn}_${stamp}.txt` };
+}
+
+function _linhaEmail(label, val, cor) {
+  return `<tr><td style="padding:8px 14px;border-bottom:1px solid #e8e8e8;color:#666;font-size:13px;">${label}</td>`
+       + `<td style="padding:8px 14px;border-bottom:1px solid #e8e8e8;font-weight:700;font-size:13px;color:${cor};">${val}</td></tr>`;
+}
+
+function gerarEmailHtmlPonto(empresa, funcionario, periodo) {
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const totalHoras    = document.getElementById('totalHoras')?.innerText    || '—';
+  const totalExtras   = document.getElementById('totalExtras')?.innerText   || '—';
+  const totalFaltas   = document.getElementById('totalFaltas')?.innerText   || '—';
+  const totalNoturnas = document.getElementById('totalNoturnas')?.innerText || '—';
+  const totalAbonadas = document.getElementById('totalAbonadas')?.innerText || '—';
+  const jornadaPrev   = document.getElementById('totalJornadaMes')?.innerText || '—';
+  const agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f0f2f5;font-family:Arial,sans-serif;">
+<div style="max-width:560px;margin:24px auto;">
+  <div style="background:#2a4d69;border-radius:8px 8px 0 0;padding:22px 28px;">
+    <div style="color:#fff;font-size:19px;font-weight:700;">Planilha de Ponto Mensal</div>
+    <div style="color:#9fbfcf;font-size:13px;margin-top:4px;">Escritório Contábil Betel</div>
+  </div>
+  <div style="background:#fff;padding:22px 28px;border:1px solid #dde0e4;border-top:none;">
+    <table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+      ${_linhaEmail('Empresa', esc(empresa), '#1B2A41')}
+      ${_linhaEmail('Funcionário', esc(funcionario), '#1B2A41')}
+      ${_linhaEmail('Período', esc(periodo), '#1B2A41')}
+    </table>
+    <div style="font-size:11px;font-weight:700;color:#2a4d69;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Resumo do Período</div>
+    <table style="width:100%;border-collapse:collapse;">
+      ${_linhaEmail('Horas Trabalhadas', totalHoras,    '#2a4d69')}
+      ${_linhaEmail('Jornada Prevista',  jornadaPrev,   '#555')}
+      ${_linhaEmail('Horas Extras',      totalExtras,   '#2e7d32')}
+      ${_linhaEmail('Faltas / Atrasos',  totalFaltas,   '#c62828')}
+      ${_linhaEmail('Horas Noturnas',    totalNoturnas, '#1565c0')}
+      ${_linhaEmail('Horas Abonadas',    totalAbonadas, '#7b1fa2')}
+    </table>
+    <div style="margin-top:16px;padding:10px 14px;background:#f0f7ff;border-radius:6px;font-size:12px;color:#1565c0;">
+      📎 O arquivo .txt com os dados completos está em anexo neste email.
+    </div>
+  </div>
+  <div style="background:#f0f2f5;padding:10px 28px;font-size:11px;color:#aaa;text-align:center;border:1px solid #dde0e4;border-top:none;border-radius:0 0 8px 8px;">
+    Enviado em ${agora} · Sistema Ponto Eletrônico · Escritório Contábil Betel
+  </div>
+</div>
+</body></html>`;
+}
+
+function _toBase64UTF8(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => { binary += String.fromCharCode(b); });
+  return btoa(binary);
+}
+
+async function enviarPorEmail() {
+  if (!PONTO_GAS_URL) {
+    alert('⚠️ URL do Ponto.gs não configurada ainda.\n\nApós implantar o Ponto.gs, cole a URL na constante PONTO_GAS_URL no início do script.');
+    return;
+  }
+
+  const empresa     = document.getElementById('empresa')?.value     || '';
+  const funcionario = document.getElementById('funcionario')?.value || '';
+  if (!empresa || !funcionario) {
+    fecharModalSalvar();
+    alert('⚠️ Preencha a empresa e o nome do funcionário antes de enviar por email.');
+    return;
+  }
+
+  const btn = document.getElementById('btn-enviar-email');
+  const htmlOriginal = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span style="font-size:22px;">⏳</span><span><strong style="display:block;">Enviando...</strong><small>Aguarde um momento</small></span>';
+  }
+
+  try {
+    const { jsonString, nomeArquivo } = gerarDadosTxtObj();
+    const txtBase64 = _toBase64UTF8(jsonString);
+    const periodo   = gerarPeriodoStr();
+
+    const body = JSON.stringify({
+      chave: "betel-2026-ponto",
+      empresa, funcionario, periodo,
+      emailHtml:   gerarEmailHtmlPonto(empresa, funcionario, periodo),
+      txtBase64,
+      nomeArquivo
+    });
+
+    const fetchOpts = { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body };
+
+    let resultado;
+    try {
+      const resp = await fetch(PONTO_GAS_URL, fetchOpts);
+      resultado  = await resp.json();
+    } catch (_) {
+      await fetch(PONTO_GAS_URL, Object.assign({}, fetchOpts, { mode: 'no-cors' }));
+      resultado = { status: 'ok' };
+    }
+
+    fecharModalSalvar();
+
+    if (resultado.status === 'ok') {
+      alert('✅ Planilha enviada com sucesso!\n\nEmail com arquivo .txt em anexo enviado ao escritório Betel.');
+    } else {
+      alert('⚠️ ' + (resultado.message || 'Erro no envio. Salve localmente e envie o arquivo manualmente.'));
+    }
+  } catch (err) {
+    console.error(err);
+    fecharModalSalvar();
+    alert('❌ Erro ao enviar por email.\n\nSalve localmente e envie o arquivo manualmente.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = htmlOriginal; }
+  }
+}
+
+function abrirWhatsApp() {
+  const empresa     = document.getElementById('empresa')?.value     || '';
+  const funcionario = document.getElementById('funcionario')?.value || '';
+  const periodo     = gerarPeriodoStr();
+  const totalHoras  = document.getElementById('totalHoras')?.innerText  || '';
+  const totalExtras = document.getElementById('totalExtras')?.innerText || '';
+  const totalFaltas = document.getElementById('totalFaltas')?.innerText || '';
+
+  let texto = 'Olá! Sou da empresa *' + (empresa || '—') + '*';
+  if (funcionario) texto += ', referente ao funcionário *' + funcionario + '*';
+  if (periodo !== '—') texto += ' (período: ' + periodo + ')';
+  texto += '.\n\n';
+  if (totalHoras)  texto += '• Horas trabalhadas: ' + totalHoras  + '\n';
+  if (totalExtras) texto += '• Horas extras: '      + totalExtras + '\n';
+  if (totalFaltas) texto += '• Faltas/Atrasos: '    + totalFaltas + '\n';
+  texto += '\nTenho dúvidas sobre a *planilha de ponto*. Pode me ajudar?';
+
+  window.open('https://wa.me/554432288785?text=' + encodeURIComponent(texto), '_blank');
 }
 </script>
 
@@ -1830,6 +2081,52 @@ button[onclick*="fileInput"]:hover {
 button[onclick*="salvarDados"],
 button[onclick*="fileInput"] {
   animation: pulse 2s ease-in-out 3;
+}
+
+/* Botão WhatsApp */
+button[onclick*="abrirWhatsApp"] {
+  background: linear-gradient(90deg, #25D366 60%, #128C7E 100%) !important;
+  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.35);
+}
+button[onclick*="abrirWhatsApp"]:hover {
+  background: linear-gradient(90deg, #128C7E 60%, #25D366 100%) !important;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.45);
+}
+
+/* Botões do modal salvar */
+.btn-modal-opcao {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.btn-modal-opcao:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+.btn-modal-opcao small {
+  font-size: 12px;
+  font-weight: normal;
+  opacity: 0.85;
+}
+.btn-modal-opcao:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media print {
+  #modalSalvar { display: none !important; }
 }
 </style>
 
