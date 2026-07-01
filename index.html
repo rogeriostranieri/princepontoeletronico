@@ -1,613 +1,1774 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulário de Admissão — Escritório Contábil Betel</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-  :root{
-    --paper:#F7F5EF;
-    --paper-2:#FBFAF6;
-    --ink:#1B2A41;
-    --ink-soft:#48566B;
-    --brass:#B8873A;
-    --brass-dark:#8F6526;
-    --line:#DAD3C2;
-    --ok:#4C6B4F;
-    --err:#A6432F;
+  <meta charset="UTF-8">
+  <meta name="author" content="Rogério Stranieri">
+  <meta name="copyright" content="© 2025 Rogério Stranieri - Todos os direitos reservados">
+  <meta name="generator" content="Sistema de Controle de Ponto v1.0">
+  <meta name="identifier" content="RS-CP-25-V1">
+  <meta name="keywords" content="controle, ponto, trabalho, folha, rogerio, stranieri">
+  <title>Planilha de Ponto Mensal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Cores padronizadas */
+:root {
+  --primary: #2a4d69;
+  --primary-light: #3e6a8f;
+  --secondary: #4b86b4;
+  --secondary-light: #6ba0cd;
+  --success: #2e7d32;
+  --danger: #c62828;
+  --warning: #f57f17;
+  --light: #f7f9fb;
+  --dark: #1e3a52;
+  --gray-100: #f5f7f9;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-400: #ced4da;
+  --gray-500: #adb5bd;
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* Tipografia Melhorada */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 16px; /* Aumentado para melhor legibilidade */
+  color: #333; /* Cor mais escura para melhor contraste */
+  line-height: 1.6; /* Espaçamento entre linhas mais confortável */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h2 {
+  color: var(--primary);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+h2::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 3px;
+}
+
+h4 {
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* Cartões e Painéis */
+#painelConfig, #painelPlanilha {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+  border: none;
+  margin-bottom: 24px;
+  padding: 20px;
+  transition: box-shadow 0.3s;
+}
+
+#painelConfig {
+  border-left: 4px solid var(--secondary);
+}
+
+#painelPlanilha {
+  border-left: 4px solid var(--primary);
+}
+
+/* Botões Modernos */
+button {
+  background: linear-gradient(90deg, var(--primary) 60%, var(--primary-light) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 4px;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 15px !important;
+}
+
+/* Ajuste das tabelas para melhor legibilidade */
+table {
+  font-size: 15px; /* Fonte maior nas tabelas */
+}
+
+th, td {
+  font-size: 15px; /* Aumentado para melhor legibilidade */
+  padding: 10px 8px; /* Mais espaço para respirar */
+}
+
+th {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+}
+
+button:hover {
+  background: linear-gradient(90deg, var(--primary-light) 60%, var(--primary) 100%);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Tabelas e Dados */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  margin-top: 18px;
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+th, td {
+  border: 1px solid var(--gray-300);
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 14px;
+}
+
+th {
+  background: linear-gradient(180deg, var(--primary), var(--primary-light));
+  color: white;
+  font-weight: 600;
+  padding: 12px 6px;
+  border-color: var(--primary);
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.7px;
+}
+
+/* Corrige a legibilidade dos cabeçalhos da tabela de configuração */
+#tabelaConfigSemanal th {
+  color: #333 !important;
+  font-weight: 600;
+  background: #e9ecef !important;
+}
+
+/* Linhas zebradas melhoradas */
+tr:nth-child(even):not(.domingo):not(.feriado) {
+  background-color: var(--gray-100);
+}
+
+/* Estados das linhas */
+tr.domingo {
+  background: #fff0f0 !important;
+  border-left: 3px solid #ffb8b8;
+}
+
+tr.feriado {
+  background-color: #fffbeb !important;
+  border-left: 3px solid #ffc107;
+}
+
+tr:hover {
+  background-color: #f0f7ff;
+}
+
+/* Formulários */
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], select {
+  border: 1px solid var(--gray-400);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 15px !important; /* Aumentado para melhor legibilidade */
+  background: white;
+  transition: all 0.2s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+input:focus, select:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(75, 134, 180, 0.15);
+  outline: none;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%232a4d69' d='M4.5 6l3.5 3.5L11.5 6H4.5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+}
+
+/* Estados visuais - melhorias */
+.falta-vermelho {
+  color: var(--danger) !important;
+  font-weight: bold !important;
+}
+
+.abono-verde {
+  color: var(--success) !important;
+  font-weight: bold !important;
+}
+
+.trabalhada-azul {
+  color: var(--secondary) !important;
+  font-weight: bold !important;
+}
+
+/* Cabeçalho do site */
+#copyright-notice {
+  text-align: center;
+  margin-bottom: 28px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--gray-300);
+  padding-bottom: 15px;
+  color: var(--dark);
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 15px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Animações sutis */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#tabelaContainer {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Ajustes para impressão */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 1cm 1cm 2cm 1cm; /* margem inferior maior para o rodapé */
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--paper);
-    background-image:radial-gradient(circle at 1px 1px, rgba(27,42,65,0.05) 1px, transparent 0);
-    background-size:22px 22px;
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    line-height:1.5;
-    padding:40px 16px 80px;
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
   }
-  .wrap{max-width:760px;margin:0 auto;}
-
-  .masthead{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--ink);padding-bottom:18px;margin-bottom:6px;}
-  .masthead h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(24px,4vw,34px);margin:0;letter-spacing:-0.01em;}
-  .masthead .sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;}
-  .stamp{font-family:'IBM Plex Mono',monospace;font-size:11px;text-align:right;color:var(--brass-dark);border:1.5px solid var(--brass);border-radius:3px;padding:6px 10px;transform:rotate(-2deg);white-space:nowrap;}
-
-  .escritorio{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin:14px 0 20px;padding:10px 14px;background:var(--paper-2);border-left:3px solid var(--brass);}
-  .escritorio b{color:var(--ink);}
-
-  .aviso{font-size:12.5px;color:var(--brass-dark);background:#FBF3E4;border:1px solid var(--brass);border-radius:4px;padding:10px 14px;margin-bottom:28px;}
-
-  .folha{background:var(--paper-2);border:1px solid var(--line);border-radius:2px;padding:30px clamp(18px,4vw,36px);margin-bottom:28px;position:relative;}
-  .folha::before{content:attr(data-fl);position:absolute;top:-11px;left:24px;background:var(--ink);color:var(--paper);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;padding:3px 10px;border-radius:2px;}
-  .folha h2{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin:6px 0 20px;padding-bottom:10px;border-bottom:1px solid var(--line);}
-  .folha h3{font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin:26px 0 12px;color:var(--ink-soft);}
-
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .grid.g3{grid-template-columns:1fr 1fr 1fr;}
-  @media (max-width:560px){.grid,.grid.g3{grid-template-columns:1fr;}}
-
-  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
-  .field{margin-bottom:16px;}
-  input[type=text],input[type=date],input[type=number],input[type=email],input[type=tel],textarea,select{
-    width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:4px;background:#fff;
-    font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);
+  #painelPlanilha {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: white !important;
+    width: 100% !important;
+    margin: 0 !important;
   }
-  input[type=file]{
-    width:100%;padding:9px 10px;border:1px dashed var(--line);border-radius:4px;background:#fff;
-    font-family:'Inter',sans-serif;font-size:13px;color:var(--ink-soft);
+  #painelPlanilha table {
+    width: 100% !important;
+    font-size: 11px !important;
+    table-layout: fixed;
+    page-break-inside: auto;
   }
-  input:focus,textarea:focus,select:focus{outline:2px solid var(--brass);outline-offset:1px;border-color:var(--brass);}
-  textarea{resize:vertical;min-height:64px;}
-
-  fieldset{border:none;padding:0;margin:0 0 16px;}
-  .check-row{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13.5px;}
-  .check-row:last-child{border-bottom:none;}
-  .check-row input[type=checkbox]{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--brass-dark);}
-  .check-row .txt b{color:var(--ink);}
-
-  .doc-row{display:grid;grid-template-columns:1fr 1.2fr;gap:14px;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line);}
-  .doc-row:last-child{border-bottom:none;}
-  .doc-row .txt{font-size:13.5px;}
-  .doc-row .txt small{display:block;color:var(--ink-soft);font-size:11.5px;margin-top:2px;}
-  @media (max-width:560px){.doc-row{grid-template-columns:1fr;}}
-
-  .radio-group{display:flex;flex-direction:column;gap:8px;}
-  .radio-row{display:flex;align-items:center;gap:9px;font-size:13.5px;}
-  .radio-row input{width:16px;height:16px;accent-color:var(--brass-dark);}
-
-  .checklist-doc{font-size:13px;color:var(--ink-soft);margin-top:-4px;margin-bottom:14px;}
-
-  .submit-bar{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:8px;}
-  button{
-    font-family:'Fraunces',serif;font-weight:600;font-size:16px;background:var(--ink);color:var(--paper);
-    border:none;padding:14px 38px;border-radius:4px;cursor:pointer;letter-spacing:.02em;
-    transition:background .15s ease, transform .1s ease;
+  #painelPlanilha table thead,
+  #painelPlanilha table thead th {
+    position: static !important;
+    box-shadow: none !important;
+    background: #e9ecef !important;
+    color: #333 !important;
   }
-  button:hover{background:var(--brass-dark);}
-  button:active{transform:scale(.98);}
-  button:disabled{opacity:.55;cursor:not-allowed;}
-
-  #status{font-family:'IBM Plex Mono',monospace;font-size:13px;text-align:center;min-height:18px;}
-  #status.ok{color:var(--ok);}
-  #status.err{color:var(--err);}
-
-  .req{color:var(--brass-dark);}
-
-  /* ===== MODAL ===== */
-  .modal-overlay{
-    position:fixed;inset:0;background:rgba(27,42,65,0.78);
-    display:none;align-items:flex-start;justify-content:center;
-    z-index:1000;padding:30px 16px;overflow-y:auto;
+  th, td {
+    padding: 4px 2px !important;
+    font-size: 11px !important;
+    word-break: break-word;
+    page-break-inside: avoid;
   }
-  .modal-overlay.aberto{display:flex;}
-  .modal-box{
-    background:#fff;max-width:640px;width:100%;border-radius:8px;
-    padding:30px 26px;position:relative;box-shadow:0 25px 70px rgba(0,0,0,.4);
-    margin:auto;
+  tr {
+    page-break-inside: avoid;
   }
-  .modal-close{
-    position:absolute;top:12px;right:14px;background:none;border:none;
-    font-size:26px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:4px 10px;
+  tr.domingo, tr.feriado {
+    border-left: none;
   }
-  .modal-close:hover{color:var(--err);background:none;}
-  .modal-title{font-family:'Fraunces',serif;font-weight:600;font-size:21px;margin:4px 0 4px;text-align:center;color:var(--ok);}
-  .modal-sub{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);margin-bottom:20px;}
-  .modal-actions{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
-  .modal-actions button{padding:12px 22px;font-size:14px;}
-  .btn-secondary{background:#fff !important;color:var(--ink) !important;border:1.5px solid var(--ink) !important;}
-  .btn-secondary:hover{background:var(--paper-2) !important;}
-
-  /* ===== RECIBO (réplica do formulário oficial) ===== */
-  #recibo-wrap{border:2px solid #000;padding:0;overflow-x:auto;}
-  .recibo-table{width:100%;min-width:520px;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;background:#fff;}
-  .recibo-table td{border:1px solid #000;padding:4px 6px;vertical-align:top;}
-  .clinica-nome{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:16px;color:#1a6b2e;}
-  .clinica-sub{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:700;font-size:10px;color:#1a6b2e;}
-  .cell-section{text-align:center;font-weight:700;}
-  .cell-red{color:#c0272d;font-weight:700;}
-  .cell-black{color:#111;font-weight:700;}
-  .valor{color:#111;font-weight:400;}
-  .valor-azul{color:#1a3fae;font-weight:400;}
-  .cell-check{font-weight:700;font-size:10.5px;}
-  .cell-check.marcado{background:#ffe97a;color:#c0272d;}
-  .box{display:inline-block;width:13px;font-weight:700;}
-  .cell-plain{font-weight:400;font-size:11px;}
-  .assinatura{text-align:right;font-size:10px;}
-  .recibo-obs{border-top:none;font-size:10.5px;color:#333;padding:6px;}
-
-  @media print{
-    body *{visibility:hidden;}
-    #modal-overlay, #modal-overlay *{visibility:visible;}
-    #modal-overlay{position:absolute;top:0;left:0;width:100%;background:#fff;padding:0;display:block;}
-    .modal-box{box-shadow:none;max-width:100%;margin:0;padding:10px;}
-    .modal-close,.modal-actions,.modal-title,.modal-sub{display:none !important;}
+  /* Oculta elementos que não precisam ser impressos */
+  #painelConfig, button, #copyright-notice {
+    display: none !important;
   }
-</style>
+  /* Mostra o rodapé de impressão com copyright */
+  #print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    border-top: 1px solid #eee;
+    padding-top: 3px;
+    margin: 0;
+    background: white;
+    z-index: 9999;
+  }
+  body {
+    margin-bottom: 40px !important; /* espaço extra para o rodapé */
+  }
+}
+  </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="masthead">
-    <div>
-      <h1>Formulário de Admissão</h1>
-      <div class="sub">Documentos &amp; Guia de Exame Médico</div>
-    </div>
-    <div class="stamp">RECEBIDO<br>ESCRITÓRIO&nbsp;BETEL</div>
+<!-- Aviso de isenção de responsabilidade -->
+<div id="copyright-notice" style="text-align:center; margin-bottom:20px; font-size:14px; border-bottom:1px solid #ddd; padding-bottom:10px;">
+  <strong>Sistema de Controle de Ponto</strong> &copy; 2025 Rogério Stranieri.<br>
+  <span style="color:#2e7d32;font-weight:bold;">Distribuição gratuita e uso permitido.</span>
+  <div style="font-size:12px; color:#777; margin-top:5px;">
+    Este sistema é disponibilizado "no estado em que se encontra", sem garantias de funcionamento, precisão ou adequação a qualquer finalidade.  
+    O autor não se responsabiliza por perdas, erros, dados incorretos ou mau uso por parte do usuário.
   </div>
-
-  <div class="escritorio">
-    <b>Escritório Contábil:</b> Julio Cezar Lopes — Escritório Contábil Betel &nbsp;·&nbsp; <b>Tel.:</b> 44 3228-8785
+  <div style="font-size:12px; color:#888; margin-top:10px;">
+    Licenciado sob os termos da <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Licença Apache 2.0</a>.
   </div>
-
-  <div class="aviso">
-    Anexe os documentos escaneados ou fotografados. Recomendado: até ~15MB no total por envio.
-  </div>
-
-  <form id="admissao-form">
-
-    <!-- ===== FL 01/02 ===== -->
-    <div class="folha" data-fl="FL. 01/02">
-      <h2>Dados da Empresa e do Funcionário</h2>
-
-      <h3>Empresa contratante</h3>
-      <div class="grid">
-        <div class="field">
-          <label>Razão Social <span class="req">*</span></label>
-          <input type="text" name="Razao_Social" required>
-        </div>
-        <div class="field">
-          <label>CNPJ <span class="req">*</span></label>
-          <input type="text" name="CNPJ" required placeholder="00.000.000/0000-00">
-        </div>
-      </div>
-      <div class="field">
-        <label>Telefone da empresa</label>
-        <input type="tel" name="Telefone_Empresa" placeholder="(44) 00000-0000">
-      </div>
-
-      <h3>Funcionário</h3>
-      <div class="field">
-        <label>Nome completo <span class="req">*</span></label>
-        <input type="text" name="Nome_Funcionario" required>
-      </div>
-      <div class="grid g3">
-        <div class="field">
-          <label>RG</label>
-          <input type="text" name="RG">
-        </div>
-        <div class="field">
-          <label>CPF <span class="req">*</span></label>
-          <input type="text" name="CPF" required placeholder="000.000.000-00">
-        </div>
-        <div class="field">
-          <label>Data de nascimento</label>
-          <input type="date" name="Data_Nascimento">
-        </div>
-      </div>
-      <div class="grid g3">
-        <div class="field">
-          <label>Função <span class="req">*</span></label>
-          <input type="text" name="Funcao" required>
-        </div>
-        <div class="field">
-          <label>Setor</label>
-          <input type="text" name="Setor">
-        </div>
-        <div class="field">
-          <label>Salário</label>
-          <input type="text" name="Salario" placeholder="R$">
-        </div>
-      </div>
-
-      <h3>Documentos (anexar cópia digitalizada)</h3>
-      <p class="checklist-doc">Foto do celular ou PDF escaneado servem. Campos sem asterisco são opcionais nesse envio, mas idealmente devem ser enviados.</p>
-
-      <div class="doc-row">
-        <div class="txt"><b>Carteira Profissional (CTPS)</b></div>
-        <input type="file" name="Anexo_CTPS" accept="image/*,.pdf">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>Identidade (RG)</b><small>constando nome do pai, nome da mãe, data de nascimento, cidade/estado</small></div>
-        <input type="file" name="Anexo_RG" accept="image/*,.pdf">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>CPF</b></div>
-        <input type="file" name="Anexo_CPF" accept="image/*,.pdf">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>Comprovante de residência</b></div>
-        <input type="file" name="Anexo_Comprovante_Residencia" accept="image/*,.pdf">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>Título de Eleitor</b></div>
-        <input type="file" name="Anexo_Titulo_Eleitor" accept="image/*,.pdf">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>Foto 3x4</b></div>
-        <input type="file" name="Anexo_Foto_3x4" accept="image/*">
-      </div>
-      <div class="doc-row">
-        <div class="txt"><b>Documentos de dependentes</b><small>CPF + certidão nascimento/casamento; carteira de vacinação se até 14 anos</small></div>
-        <input type="file" name="Anexo_Dependentes" accept="image/*,.pdf" multiple>
-      </div>
-
-      <h3>Outras confirmações</h3>
-      <fieldset>
-        <label class="check-row"><input type="checkbox" name="Telefone_Informado" value="Sim"><span class="txt">Número de telefone informado</span></label>
-        <label class="check-row"><input type="checkbox" name="Grau_Instrucao_Informado" value="Sim"><span class="txt">Grau de instrução informado</span></label>
-        <label class="check-row"><input type="checkbox" name="Exame_Admissional_Realizado" value="Sim"><span class="txt">Exame admissional realizado</span></label>
-      </fieldset>
-      <p class="checklist-doc">Lembrete: a admissão precisa ser validada no e-Social até o dia anterior ao início das atividades (Portaria MTP nº 4.370/2022, Art. 18, I).</p>
-    </div>
-
-    <!-- ===== FL 02/02 ===== -->
-    <div class="folha" data-fl="FL. 02/02">
-      <h2>Guia de Exame Médico</h2>
-
-      <h3>Tipo de exame</h3>
-      <fieldset>
-        <label class="check-row"><input type="checkbox" name="Ex_Pre_Admissional" value="Sim"><span class="txt">Pré-admissional</span></label>
-        <label class="check-row"><input type="checkbox" name="Ex_Periodico" value="Sim"><span class="txt">Periódico</span></label>
-        <label class="check-row"><input type="checkbox" name="Ex_Demissional" value="Sim"><span class="txt">Demissional</span></label>
-        <label class="check-row"><input type="checkbox" name="Ex_Mudanca_Funcao" value="Sim"><span class="txt">Mudança de função</span></label>
-        <label class="check-row"><input type="checkbox" name="Ex_Retorno" value="Sim"><span class="txt">Retorno ao trabalho (trazer o atestado)</span></label>
-      </fieldset>
-
-      <h3>Modalidade</h3>
-      <div class="radio-group">
-        <label class="radio-row"><input type="radio" name="Modalidade" value="Somente Clinico"> Somente Clínico</label>
-        <label class="radio-row"><input type="radio" name="Modalidade" value="Clinico + Exames Complementares"> Clínico + Exames Complementares</label>
-        <label class="radio-row"><input type="radio" name="Modalidade" value="Somente Exames Complementares"> Somente Exames Complementares</label>
-      </div>
-
-      <h3>Exames complementares</h3>
-      <fieldset>
-        <label class="check-row"><input type="checkbox" name="Comp_Audiometria" value="Sim"><span class="txt">Audiometria</span></label>
-        <label class="check-row"><input type="checkbox" name="Comp_Hemograma" value="Sim"><span class="txt">Hemograma</span></label>
-        <label class="check-row"><input type="checkbox" name="Comp_Acuidade_Visual" value="Sim"><span class="txt">Acuidade Visual</span></label>
-        <label class="check-row"><input type="checkbox" name="Comp_Gama_GT" value="Sim"><span class="txt">Gama GT</span></label>
-      </fieldset>
-      <div class="field">
-        <label>Outros exames</label>
-        <input type="text" name="Comp_Outros">
-      </div>
-
-      <div class="field">
-        <label>Observações</label>
-        <textarea name="Observacoes"></textarea>
-      </div>
-    </div>
-
-    <!-- ===== RESPONSÁVEL ===== -->
-    <div class="folha" data-fl="ENVIO">
-      <h2>Responsável pelo preenchimento</h2>
-      <div class="grid">
-        <div class="field">
-          <label>Nome do responsável <span class="req">*</span></label>
-          <input type="text" name="Responsavel_Nome" required>
-        </div>
-        <div class="field">
-          <label>E-mail para contato</label>
-          <input type="email" name="Responsavel_Email">
-        </div>
-      </div>
-      <div class="field">
-        <label>Data de preenchimento</label>
-        <input type="date" name="Data_Preenchimento" id="data_preenchimento">
-      </div>
-
-      <div class="submit-bar">
-        <button type="submit" id="btn-enviar">Enviar para o Escritório Betel</button>
-        <div id="status"></div>
-      </div>
-    </div>
-
-  </form>
 </div>
 
-<!-- ===== MODAL DE CONFIRMAÇÃO / RECIBO ===== -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal-box">
-    <button type="button" class="modal-close" id="modal-close" aria-label="Fechar">&times;</button>
-    <div class="modal-title">✓ Enviado com sucesso</div>
-    <div class="modal-sub">O Escritório Betel recebeu os dados. Confira o resumo abaixo.</div>
 
-    <div id="recibo-imprimir">
-      <div id="recibo-wrap">
-        <table class="recibo-table">
-          <tr>
-            <td colspan="2" style="width:60%;">
-              <div class="clinica-nome">Nome da empresa Contratada</div>
-              <div class="clinica-sub">(Medicina e Segurança do Trabalho)</div>
-            </td>
-            <td colspan="2">
-              <div><b>FONE/FAX:</b> (44)________ / (44)________</div>
-              <div><b>E-MAIL:</b> ________________________</div>
-            </td>
-          </tr>
-          <tr><td colspan="4" class="cell-black">Endereço: ________________________________________</td></tr>
-          <tr><td colspan="4" class="cell-section">DADOS DA EMPRESA</td></tr>
-          <tr><td colspan="4" class="cell-red">RAZÃO SOCIAL: <span class="valor" id="r-razao"></span></td></tr>
-          <tr>
-            <td colspan="2" class="cell-red">CNPJ: <span class="valor" id="r-cnpj"></span></td>
-            <td colspan="2" class="cell-black">TEL.: <span class="valor" id="r-tel-empresa"></span></td>
-          </tr>
-          <tr>
-            <td colspan="2" class="cell-red">ESC. CONTÁBIL: <span class="valor">JULIO CEZAR LOPES – Escritório Contábil Betel</span></td>
-            <td colspan="2" class="cell-black">TEL.: <span class="valor-azul">44/3228-8785</span></td>
-          </tr>
-          <tr><td colspan="4" class="cell-section">DADOS DO FUNCIONÁRIO</td></tr>
-          <tr><td colspan="4" class="cell-red">ENCAMINHO O FUNCIONÁRIO: <span class="valor" id="r-func-nome"></span></td></tr>
-          <tr>
-            <td class="cell-red">RG: <span class="valor" id="r-rg"></span></td>
-            <td class="cell-red">CPF: <span class="valor" id="r-cpf"></span></td>
-            <td colspan="2" class="cell-red">DT. NASC: <span class="valor" id="r-dtnasc"></span></td>
-          </tr>
-          <tr>
-            <td colspan="2" class="cell-red">FUNÇÃO: <span class="valor" id="r-funcao"></span></td>
-            <td colspan="2" class="cell-black">SETOR: <span class="valor" id="r-setor"></span></td>
-          </tr>
-          <tr><td colspan="4" class="cell-black">PARA EXAME:</td></tr>
-          <tr>
-            <td class="cell-check" id="chk-pre"><span class="box">☐</span> PRÉ-ADMISSIONAL</td>
-            <td class="cell-check" id="chk-per"><span class="box">☐</span> PERIÓDICO</td>
-            <td colspan="2" class="cell-check" id="chk-dem"><span class="box">☐</span> DEMISSIONAL</td>
-          </tr>
-          <tr>
-            <td colspan="2" class="cell-check" id="chk-mud"><span class="box">☐</span> MUDANÇA DE FUNÇÃO</td>
-            <td colspan="2" class="cell-check" id="chk-ret"><span class="box">☐</span> RETORNO AO TRABALHO (Trazer o Atestado)</td>
-          </tr>
-          <tr>
-            <td class="cell-check" id="chk-mod1"><span class="box">☐</span> Somente Clínico</td>
-            <td class="cell-check" id="chk-mod2"><span class="box">☐</span> Clínico + Exames Complementares</td>
-            <td colspan="2" class="cell-check" id="chk-mod3"><span class="box">☐</span> Somente Exames Complementares</td>
-          </tr>
-          <tr><td colspan="4" class="cell-black">EXAMES COMPLEMENTARES:</td></tr>
-          <tr>
-            <td class="cell-check" id="chk-audio"><span class="box">☐</span> AUDIOMETRIA</td>
-            <td class="cell-check" id="chk-hemo"><span class="box">☐</span> HEMOGRAMA</td>
-            <td colspan="2" class="cell-check" id="chk-outros"><span class="box">☐</span> OUTROS: <span class="valor" id="r-outros"></span></td>
-          </tr>
-          <tr>
-            <td class="cell-check" id="chk-acuidade"><span class="box">☐</span> ACUIDADE VISUAL</td>
-            <td class="cell-check" id="chk-gamagt"><span class="box">☐</span> GAMA GT</td>
-            <td colspan="2"></td>
-          </tr>
-          <tr>
-            <td colspan="2" class="cell-plain">DATA: <span class="valor" id="r-data"></span></td>
-            <td colspan="2" class="cell-plain assinatura">Assinatura e Carimbo da Empresa<br>ou Nome do Responsável<br><b><span id="r-responsavel"></span></b></td>
-          </tr>
-          <tr>
-            <td colspan="4" class="cell-plain">AGENDADO PARA O DIA: ____ / ____ / ________ &nbsp;&nbsp;&nbsp;&nbsp; HORA: ____ : ____</td>
-          </tr>
-        </table>
-        <div class="recibo-obs" id="recibo-obs-wrap" style="display:none;">
-          <b>Observações:</b> <span id="r-obs"></span>
-        </div>
-      </div>
-    </div>
+<h2>Planilha de Ponto Mensal</h2>
 
-    <div class="modal-actions">
-      <button type="button" id="btn-imprimir">🖨️ Imprimir</button>
-      <button type="button" class="btn-secondary" id="btn-pdf">⬇️ Salvar PDF</button>
+<div style="margin-bottom: 16px;">
+  <label>Empresa:
+    <input type="text" id="empresa" placeholder="Nome da Empresa" style="width:320px;">
+  </label>
+  <label style="margin-left: 24px;">Funcionário:
+    <input type="text" id="funcionario" placeholder="Nome do Funcionário" style="width:250px;">
+  </label>
+</div>
+
+<div style="margin-bottom: 16px;">
+  <label>Data Inicial:
+    <input type="date" id="dataInicial">
+  </label>
+  <label style="margin-left: 24px;">Data Final:
+    <input type="date" id="dataFinal">
+  </label>
+</div>
+
+<div style="margin: 18px 0;">
+  <button onclick="gerarPlanilhaComValidacao()" style="padding:8px 24px; font-size:16px;">Gerar Planilha</button>
+  <button id="btnConfig" onclick="mostrarConfiguracoes()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Configuração Semanal</button>
+  <button onclick="window.print()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Imprimir</button>
+  <button onclick="salvarDados()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
+  <button onclick="document.getElementById('fileInput').click()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);">📂 Carregar Dados</button>
+  <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="carregarDados(event)">
+</div>
+
+<div style="display: flex; gap: 32px;">
+  <div id="painelConfig" style="flex: 0 0 320px; background: #f4f4f4; border: 1px solid #ccc; padding: 16px; border-radius: 6px; display:none;">
+    <h4>Configuração Semanal</h4>
+    <table style="width:100%; font-size: 14px;" id="tabelaConfigSemanal">
+      <tr>
+        <th>Dia</th>
+        <th>Jornada</th>
+        <th>Descanso?</th>
+      </tr>
+      <tr>
+        <td>Segunda-feira</td>
+        <td><input type="time" id="jornada_seg" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="1" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Terça-feira</td>
+        <td><input type="time" id="jornada_ter" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="2" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Quarta-feira</td>
+        <td><input type="time" id="jornada_qua" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="3" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Quinta-feira</td>
+        <td><input type="time" id="jornada_qui" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="4" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Sexta-feira</td>
+        <td><input type="time" id="jornada_sex" value="08:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="5" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Sábado</td>
+        <td><input type="time" id="jornada_sab" value="04:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="6" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();"></td>
+      </tr>
+      <tr>
+        <td>Domingo</td>
+        <td><input type="time" id="jornada_dom" value="00:00" onchange="atualizaTotalSemanal(); recalcularTodasAsLinhas();"></td>
+        <td><input type="checkbox" name="descanso" value="0" onchange="atualizaTotalSemanal(); atualizarFolgasNaTabela(); recalcularTodasAsLinhas();" checked></td>
+      </tr>
+      <tr style="font-weight:bold;background:#e9e9e9;">
+        <td colspan="3" id="totalJornadaSemanal" style="text-align:center;"></td>
+      </tr>
+    </table>
+    <div style="font-size:12px; color:#666; margin-top:8px;">
+      <b>Dica:</b> Marque o dia de descanso semanal (por padrão: domingo).
     </div>
   </div>
+  <div id="painelPlanilha" style="flex: 1;">
+  </div>
+</div>
+
+<!-- Modal para abono -->
+<div id="modalAbono" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);z-index:999;align-items:center;justify-content:center;">
+  <div style="background:#fff;padding:24px 32px;border-radius:8px;box-shadow:0 2px 12px #0003;min-width:300px;text-align:center;">
+    <h3>Horas a Abonar</h3>
+    <input type="time" id="inputHorasAbonadas" step="60" style="font-size:18px;width:120px;">
+    <div style="margin-top:18px;">
+      <button onclick="confirmarAbono()" style="padding:6px 18px;">OK</button>
+      <button onclick="fecharModalAbono()" style="padding:6px 18px;margin-left:12px;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="print-footer" style="display:none">
+  <p>&copy; 2025 Rogério Stranieri. Todos os direitos reservados.</p>
 </div>
 
 <script>
-  // ================= CONFIGURAÇÃO =================
-  // Cole aqui a URL do seu Web App do Google Apps Script (termina em /exec)
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwn9c5W3kdgycVNFJ4gl03TmfJvDrMWOvzQftHV8t78OS_h6XveC-MBZkSTEA4OH4w/exec";
-  const CHAVE_SECRETA = "betel-2026-admissao"; // precisa ser IGUAL à do Code.gs
-  // ==================================================
 
-  const dtInput = document.getElementById('data_preenchimento');
-  if (dtInput) dtInput.value = new Date().toISOString().split('T')[0];
+// Marca d'água oculta no JS - Sistema de Controle de Ponto - Rogério Stranieri - hash: 7e2b1c9d
+// Copyright (c) 2025 Rogério Stranieri - Proibida a cópia, modificação ou redistribuição.
+// Este código está protegido por monitoramento digital e marca d'água invisível.
+/* ========================================================================
+ * Sistema de Controle de Ponto - v1.0.0
+ * Copyright (c) 2025 Rogério Stranieri - Todos os direitos reservados
+ * Código proprietário - Uso exclusivo do cliente sob licença
+ * RSI-25-2805-001
+ * hash: 7e2b1c9d
+ * ======================================================================== */
 
-  const form = document.getElementById('admissao-form');
-  const statusEl = document.getElementById('status');
-  const btn = document.getElementById('btn-enviar');
-
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function collectFiles() {
-    const fileInputs = form.querySelectorAll('input[type=file]');
-    const files = [];
-    for (const input of fileInputs) {
-      for (const file of input.files) {
-        const base64 = await fileToBase64(file);
-        files.push({
-          fieldName: input.name,
-          filename: file.name,
-          mimeType: file.type || 'application/octet-stream',
-          base64: base64
-        });
-      }
-    }
-    return files;
-  }
-
-  function collectFields() {
-    const fields = {};
-    const elements = form.querySelectorAll('input, textarea');
-    elements.forEach(el => {
-      if (el.type === 'file') return;
-      if (el.type === 'checkbox') {
-        if (el.checked) fields[el.name] = el.value || 'Sim';
-        return;
-      }
-      if (el.type === 'radio') {
-        if (el.checked) fields[el.name] = el.value;
-        return;
-      }
-      if (el.name) fields[el.name] = el.value;
-    });
-    return fields;
-  }
-
-  function formatarData(iso) {
-    if (!iso) return '____/____/________';
-    const p = iso.split('-');
-    if (p.length !== 3) return iso;
-    return p[2] + '/' + p[1] + '/' + p[0];
-  }
-
-  function marcar(id, condicao) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (condicao) {
-      el.classList.add('marcado');
-      const box = el.querySelector('.box');
-      if (box) box.textContent = '☒';
-    }
-  }
-
-  function preencherRecibo(fields) {
-    document.getElementById('r-razao').textContent = fields['Razao_Social'] || '';
-    document.getElementById('r-cnpj').textContent = fields['CNPJ'] || '';
-    document.getElementById('r-tel-empresa').textContent = fields['Telefone_Empresa'] || '';
-    document.getElementById('r-func-nome').textContent = fields['Nome_Funcionario'] || '';
-    document.getElementById('r-rg').textContent = fields['RG'] || '';
-    document.getElementById('r-cpf').textContent = fields['CPF'] || '';
-    document.getElementById('r-dtnasc').textContent = formatarData(fields['Data_Nascimento']);
-    document.getElementById('r-funcao').textContent = fields['Funcao'] || '';
-    document.getElementById('r-setor').textContent = fields['Setor'] || '';
-    document.getElementById('r-outros').textContent = fields['Comp_Outros'] || '';
-    document.getElementById('r-data').textContent = formatarData(fields['Data_Preenchimento']);
-    document.getElementById('r-responsavel').textContent = fields['Responsavel_Nome'] || '';
-
-    marcar('chk-pre', fields['Ex_Pre_Admissional'] === 'Sim');
-    marcar('chk-per', fields['Ex_Periodico'] === 'Sim');
-    marcar('chk-dem', fields['Ex_Demissional'] === 'Sim');
-    marcar('chk-mud', fields['Ex_Mudanca_Funcao'] === 'Sim');
-    marcar('chk-ret', fields['Ex_Retorno'] === 'Sim');
-
-    marcar('chk-mod1', fields['Modalidade'] === 'Somente Clinico');
-    marcar('chk-mod2', fields['Modalidade'] === 'Clinico + Exames Complementares');
-    marcar('chk-mod3', fields['Modalidade'] === 'Somente Exames Complementares');
-
-    marcar('chk-audio', fields['Comp_Audiometria'] === 'Sim');
-    marcar('chk-hemo', fields['Comp_Hemograma'] === 'Sim');
-    marcar('chk-acuidade', fields['Comp_Acuidade_Visual'] === 'Sim');
-    marcar('chk-gamagt', fields['Comp_Gama_GT'] === 'Sim');
-    marcar('chk-outros', !!fields['Comp_Outros']);
-
-    const obsWrap = document.getElementById('recibo-obs-wrap');
-    if (fields['Observacoes']) {
-      document.getElementById('r-obs').textContent = fields['Observacoes'];
-      obsWrap.style.display = 'block';
-    } else {
-      obsWrap.style.display = 'none';
-    }
-
-    window.__nomeFuncionarioAtual = (fields['Nome_Funcionario'] || 'funcionario').replace(/[^a-zA-Z0-9]+/g, '_');
-  }
-
-  const modalOverlay = document.getElementById('modal-overlay');
-  document.getElementById('modal-close').addEventListener('click', () => {
-    modalOverlay.classList.remove('aberto');
-  });
-  modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) modalOverlay.classList.remove('aberto');
-  });
-
-  document.getElementById('btn-imprimir').addEventListener('click', () => {
-    window.print();
-  });
-
-  document.getElementById('btn-pdf').addEventListener('click', () => {
-    const elemento = document.getElementById('recibo-imprimir');
-    const nome = 'Guia_Admissao_' + (window.__nomeFuncionarioAtual || 'funcionario') + '.pdf';
-    html2pdf().set({
-      margin: 8,
-      filename: nome,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(elemento).save();
-  });
-
-  form.addEventListener('submit', async function (e) {
+// Função para dificultar cópia do código-fonte (não impede, só atrasa)
+document.addEventListener('contextmenu', function(e) {
+  if (!e.ctrlKey && !e.shiftKey) e.preventDefault();
+});
+document.addEventListener('keydown', function(e) {
+  // Bloqueia F12, Ctrl+U, Ctrl+S, Ctrl+Shift+I, Ctrl+Shift+C
+  if (
+    e.key === 'F12' ||
+    (e.ctrlKey && e.key.toLowerCase() === 'u') ||
+    (e.ctrlKey && e.key.toLowerCase() === 's') ||
+    (e.ctrlKey && e.shiftKey && (e.key.toLowerCase() === 'i' || e.key.toLowerCase() === 'c'))
+  ) {
     e.preventDefault();
-    statusEl.textContent = '';
-    statusEl.className = '';
+    alert('Ação bloqueada por proteção de copyright.');
+  }
+});
 
-    if (APPS_SCRIPT_URL.indexOf('COLE_AQUI') !== -1) {
-      statusEl.textContent = 'Configuração pendente: cole a URL do Apps Script no código.';
-      statusEl.className = 'err';
+const feriadosFixos = [
+  "01-01", "21-04", "01-05", "07-09", "12-10", "02-11", "15-11", "25-12"
+];
+
+
+// NOVA função para calcular total de jornada no período escolhido
+function calcularTotalJornadaPeriodo(dataInicial, dataFinal) {
+  let diasSemana = [0,0,0,0,0,0,0];
+  let d = new Date(dataInicial);
+  while (d <= dataFinal) { diasSemana[d.getDay()]++; d.setDate(d.getDate() + 1); }
+  let total = 0;
+  for (let i = 0; i < 7; i++) {
+    const jornada = document.getElementById([
+      "jornada_dom","jornada_seg","jornada_ter","jornada_qua",
+      "jornada_qui","jornada_sex","jornada_sab"
+    ][i]).value;
+    const isDescanso = document.querySelector('input[name="descanso"][value="'+i+'"]').checked;
+    if (!isDescanso && jornada) {
+      const [h, m] = jornada.split(":").map(Number);
+      total += (h * 60 + m) * diasSemana[i];
+    }
+  }
+  return total;
+}
+
+// Função exemplo simples (precisa de ajustes para regras completas)
+function calcular(el) {
+  const row = el.parentElement.parentElement;
+  const situacao = row.cells[2].querySelector("select").value;
+  const cellAbono = row.querySelector(".horasAbonadas");
+
+  // Mostra o campo de abono só se selecionado "abonado" ou "atestado"
+  if (situacao === "abonado" || situacao === "atestado") {
+    if (!cellAbono.querySelector("input")) {
+      const input = document.createElement("input");
+      input.type = "time";
+      input.style.width = "90px";
+      input.onchange = function() { calcular(this); };
+      cellAbono.innerHTML = "";
+      cellAbono.appendChild(input);
+    }
+  } else {
+    cellAbono.innerHTML = "";
+  }
+
+  // Adiciona ou remove a classe "feriado" baseado na seleção
+  if (situacao === "feriado") {
+    row.classList.add("feriado");
+  } else {
+    // Preserva a classe feriado apenas se for um feriado fixo
+    const rowIndex = row.rowIndex - 1;
+    const dataInicialEl = document.getElementById('dataInicial');
+    if (dataInicialEl && dataInicialEl.value) {
+      const dataInicialObj = new Date(dataInicialEl.value + "T00:00:00");
+      const tempData = new Date(dataInicialObj);
+      tempData.setDate(dataInicialObj.getDate() + rowIndex);
+
+      const dia = tempData.getDate().toString().padStart(2, '0');
+      const mes = (tempData.getMonth() + 1).toString().padStart(2, '0');
+      const diaStr = `${dia}-${mes}`;
+
+      if (!feriadosFixos.includes(diaStr)) {
+        row.classList.remove("feriado");
+      }
+    } else {
+      row.classList.remove("feriado");
+    }
+  }
+
+  // Pega o valor do abono (em minutos)
+  let abonoMin = 0;
+  if ((situacao === "abonado" || situacao === "atestado") && cellAbono.querySelector("input")) {
+    const val = cellAbono.querySelector("input").value;
+    if (val) {
+      const [h, m] = val.split(":").map(Number);
+      abonoMin = h * 60 + m;
+      row.setAttribute('data-abono-min', abonoMin);
+    } else {
+      row.removeAttribute('data-abono-min');
+    }
+  }
+
+  // Pegue os valores dos 4 campos de horário
+  const entrada1 = row.cells[3].querySelector("input").value;
+  const saida1   = row.cells[4].querySelector("input").value;
+  const entrada2 = row.cells[5].querySelector("input").value;
+  const saida2   = row.cells[6].querySelector("input").value;
+
+  // Descubra o dia da semana da linha usando a data correta
+  const rowIndex = row.rowIndex - 1;
+  let diaSemanaNum, dataAtual;
+  
+  const dataInicialEl = document.getElementById('dataInicial');
+  if (dataInicialEl && dataInicialEl.value) {
+    const dataInicialObj = new Date(dataInicialEl.value + "T00:00:00");
+    dataAtual = new Date(dataInicialObj);
+    dataAtual.setDate(dataInicialObj.getDate() + rowIndex);
+    diaSemanaNum = dataAtual.getDay();
+  } else {
+    // fallback para método antigo se não houver data inicial
+    const mesEl = document.getElementById('mes');
+    const anoEl = document.getElementById('ano');
+    if (mesEl && anoEl) {
+      const ano = parseInt(anoEl.value);
+      const mes = parseInt(mesEl.value);
+      dataAtual = new Date(ano, mes, rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    } else {
+      // último fallback - use a data atual
+      const hoje = new Date();
+      dataAtual = new Date(hoje.getFullYear(), hoje.getMonth(), rowIndex + 1);
+      diaSemanaNum = dataAtual.getDay();
+    }
+  }
+
+  const descansoSemanal = getDescansoSemanal();
+  const isDomingo = diaSemanaNum === 0;
+  const isFeriado = (() => {
+    if (dataAtual) {
+      const d = dataAtual.getDate().toString().padStart(2, '0');
+      const m = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+      return feriadosFixos.includes(`${d}-${m}`);
+    }
+    return false;
+  })();
+  const isDescanso = descansoSemanal.includes(diaSemanaNum);
+
+  // Jornada do dia conforme configuração semanal
+  const jornadaStr = getJornadaDiaSemana(diaSemanaNum);
+  if (!jornadaStr) return;
+  const [jh, jm] = jornadaStr.split(":").map(Number);
+  let jornadaMin = jh * 60 + jm;
+
+  // Se domingo e jornada do domingo for 00:00, use a jornada da segunda
+  if (isDomingo && jornadaMin === 0) {
+    const segundaStr = getJornadaDiaSemana(1); // 1 = segunda-feira
+    if (segundaStr) {
+      const [jh2, jm2] = segundaStr.split(":").map(Number);
+      jornadaMin = jh2 * 60 + jm2;
+    }
+  }
+
+  function toMin(hm) {
+    if (!hm) return null;
+    const [h, m] = hm.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  function calcTurno(entrada, saida) {
+    if (!entrada || !saida) return { normais: 0, noturnos: 0 };
+    let e = toMin(entrada), s = toMin(saida);
+    let total = s - e;
+    if (total < 0) total += 24 * 60;
+    let normais = 0, noturnos = 0;
+    for (let i = 0; i < total; i++) {
+      let minAtual = (e + i) % (24 * 60);
+      let hora = Math.floor(minAtual / 60);
+      if (hora >= 22 || hora < 5) {
+        noturnos++;
+      } else {
+        normais++;
+      }
+    }
+    let noturnosConvertidos = Math.round(noturnos * (60 / 52.5));
+    return { normais, noturnos: noturnosConvertidos, noturnosOriginais: noturnos };
+  }
+
+  const t1 = calcTurno(entrada1, saida1);
+  const t2 = calcTurno(entrada2, saida2);
+
+  const normais = t1.normais + t2.normais;
+  const noturnas = t1.noturnos + t2.noturnos;
+
+  // 1. Se for feriado, trata tudo como hora extra
+  if (situacao === "feriado" || isFeriado) {
+    const extras = normais + noturnas + abonoMin;
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText =
+      extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+    atualizarTotais();
+    return;
+  }
+
+  // 2. Se for "Folga" (independente de ser descanso ou não), trata como extra
+  if (situacao === "folga") {
+    const extras = normais + noturnas + abonoMin;
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText =
+      extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+    atualizarTotais();
+    return;
+  }
+
+  // 3. Se for dia de descanso na configuração
+  if (isDescanso) {
+    if (situacao === "excecao") {
+      // Calcula normalmente (como dia útil)
+      // (deixe seguir para o cálculo normal mais abaixo)
+    } else {
+      // Qualquer horário lançado é extra
+      const extras = normais + noturnas + abonoMin;
+      row.querySelector(".horasTrabalhadas").innerText = "-";
+      row.querySelector(".extras").innerText =
+        extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+      row.querySelector(".faltas").innerText = "-";
+      row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+      atualizarTotais();
       return;
     }
+  }
 
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-    statusEl.textContent = 'Preparando anexos...';
-    statusEl.className = '';
-
-    try {
-      const fields = collectFields();
-      const files = await collectFiles();
-
-      statusEl.textContent = 'Enviando para o Escritório Betel...';
-
-      const response = await fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ chave: CHAVE_SECRETA, fields, files })
-      });
-
-      const result = await response.json();
-
-      if (result.status === 'ok') {
-        statusEl.textContent = 'Enviado com sucesso! O Escritório Betel recebeu os dados.';
-        statusEl.className = 'ok';
-        preencherRecibo(fields);
-        modalOverlay.classList.add('aberto');
-        form.reset();
-        if (dtInput) dtInput.value = new Date().toISOString().split('T')[0];
-      } else {
-        throw new Error(result.message || 'Erro no envio');
-      }
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = 'Erro ao enviar: ' + err.message;
-      statusEl.className = 'err';
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Enviar para o Escritório Betel';
+  // 4. Situações "abonado" e "atestado" (tratamento especial)
+  if (situacao === "abonado" || situacao === "atestado") {
+    // Soma horas trabalhadas + abono
+    const minutosCompensados = normais + noturnas + abonoMin;
+    let extras = 0, faltas = 0;
+    if (minutosCompensados > jornadaMin + 10) {
+      extras = minutosCompensados - jornadaMin;
+    } else if (minutosCompensados > jornadaMin && minutosCompensados <= jornadaMin + 10) {
+      extras = 0;
+    } else if (minutosCompensados < jornadaMin - 10) {
+      faltas = jornadaMin - minutosCompensados;
     }
-  });
+
+    // Mostra as horas trabalhadas normalmente
+    const trabalhadas = normais + noturnas;
+    row.querySelector(".horasTrabalhadas").innerText =
+      `${Math.floor(trabalhadas/60)}h${(trabalhadas%60).toString().padStart(2,"0")}m`;
+    row.querySelector(".extras").innerText = extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".faltas").innerText = faltas > 0 ? `${Math.floor(faltas/60)}h${(faltas%60).toString().padStart(2,"0")}m` : "-";
+    row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+
+    // Estilos
+    row.querySelector(".horasAbonadas").classList.add("abono-verde");
+    if (faltas > 0) {
+      row.querySelector(".faltas").classList.add("falta-vermelho");
+    } else {
+      row.querySelector(".faltas").classList.remove("falta-vermelho");
+    }
+    if (extras === 0 && faltas === 0 && (normais + noturnas) > 0) {
+      row.querySelector(".horasTrabalhadas").classList.add("trabalhada-azul");
+    } else {
+      row.querySelector(".horasTrabalhadas").classList.remove("trabalhada-azul");
+    }
+
+    atualizarTotais();
+    return;
+  }
+
+  // 5. Situação "falta"
+  if (situacao === "falta") {
+    row.querySelector(".horasTrabalhadas").innerText = "-";
+    row.querySelector(".extras").innerText = "-";
+    row.querySelector(".faltas").innerText = `${Math.floor(jornadaMin/60)}h${(jornadaMin%60).toString().padStart(2,"0")}m`;
+    row.querySelector(".noturnas").innerText = "-";
+    
+    // Adiciona a classe para deixar o texto vermelho
+    row.querySelector(".faltas").classList.add("falta-vermelho");
+    
+    atualizarTotais();
+    return;
+  }
+
+  // 6. Cálculo normal para dias úteis e exceção em descanso
+  const minutosCompensados = normais + noturnas + abonoMin;
+  let extras = 0, faltas = 0;
+  if (minutosCompensados > jornadaMin + 10) {
+    extras = minutosCompensados - jornadaMin;
+  } else if (minutosCompensados > jornadaMin && minutosCompensados <= jornadaMin + 10) {
+    extras = 0;
+  } else if (minutosCompensados < jornadaMin - 10) {
+    faltas = jornadaMin - minutosCompensados;
+  }
+
+  const trabalhadas = normais + noturnas;
+  row.querySelector(".horasTrabalhadas").innerText =
+    `${Math.floor(trabalhadas/60)}h${(trabalhadas%60).toString().padStart(2,"0")}m`;
+  row.querySelector(".extras").innerText = extras > 0 ? `${Math.floor(extras/60)}h${(extras%60).toString().padStart(2,"0")}m` : "-";
+  row.querySelector(".faltas").innerText = faltas > 0 ? `${Math.floor(faltas/60)}h${(faltas%60).toString().padStart(2,"0")}m` : "-";
+  row.querySelector(".noturnas").innerText = noturnas > 0 ? `${Math.floor(noturnas/60)}h${(noturnas%60).toString().padStart(2,"0")}m` : "-";
+  atualizarTotais();
+
+  // Limpa classes antigas
+  row.querySelector(".faltas").classList.remove("falta-vermelho");
+  row.querySelector(".horasAbonadas").classList.remove("abono-verde");
+  row.querySelector(".horasTrabalhadas").classList.remove("trabalhada-azul");
+
+  // Faltas em vermelho (só se for maior que zero)
+  const faltasCell = row.querySelector(".faltas");
+  if (
+    faltasCell.innerText !== "-" &&
+    faltasCell.innerText.trim() !== "" &&
+    !faltasCell.innerText.startsWith("0h00")
+  ) {
+    faltasCell.classList.add("falta-vermelho");
+  }
+
+  // Abonado em verde
+  if (situacao === "abonado" || situacao === "atestado") {
+    row.querySelector(".horasAbonadas").classList.add("abono-verde");
+  }
+
+  // Horas trabalhadas corretas em azul
+  if (
+    row.querySelector(".horasTrabalhadas").innerText !== "-" &&
+    extras === 0 && faltas === 0 && (normais + noturnas) > 0
+  ) {
+    row.querySelector(".horasTrabalhadas").classList.add("trabalhada-azul");
+  }
+}
+
+function getJornadaDiaSemana(diaSemana) {
+  // 0=Dom, 1=Seg, ..., 6=Sab
+  const ids = [
+    "jornada_dom", "jornada_seg", "jornada_ter", "jornada_qua",
+    "jornada_qui", "jornada_sex", "jornada_sab"
+  ];
+  return document.getElementById(ids[diaSemana]).value || "00:00";
+}
+
+function getDescansoSemanal() {
+  const checks = document.getElementsByName("descanso");
+  let dias = [];
+  for (let c of checks) if (c.checked) dias.push(parseInt(c.value));
+  return dias; // array de dias de descanso
+}
+
+// MANTENHA APENAS ESTA VERSÃO DA FUNÇÃO gerarTabela
+function gerarTabela() {
+  // NOVO: pega as datas inicial e final
+  const dataInicialStr = document.getElementById('dataInicial').value;
+  const dataFinalStr = document.getElementById('dataFinal').value;
+  let dataInicial, dataFinal;
+
+  if (dataInicialStr && dataFinalStr) {
+    dataInicial = new Date(dataInicialStr + "T00:00:00");
+    dataFinal = new Date(dataFinalStr + "T00:00:00");
+  } else {
+    // fallback para mês/ano se não preenchido
+    const mes = parseInt(document.getElementById('mes').value);
+    const ano = parseInt(document.getElementById('ano').value);
+    dataInicial = new Date(ano, mes, 1);
+    dataFinal = new Date(ano, mes + 1, 0);
+  }
+
+  const container = document.getElementById('tabelaContainer');
+  const descansoSemanal = getDescansoSemanal();
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>Dia</th><th>Semana</th>
+        <th>Situação</th>
+        <th>Entrada 1º</th><th>Saída 1º</th>
+        <th>Entrada 2º</th><th>Saída 2º</th>
+        <th>Horas Trabalhadas</th><th>Extras</th><th>Atrasos/Faltas</th>
+        <th>Horas Noturnas</th>
+        <th>Horas Abonadas</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  let d = new Date(dataInicial);
+  while (d.getTime() <= dataFinal.getTime()) {
+    const diaSemanaNum = d.getDay();
+    const diaSemana = d.toLocaleDateString("pt-BR", { weekday: 'long' });
+    const diaStr = `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth()+1).toString().padStart(2, '0')}`;
+    const isDomingo = diaSemanaNum === 0;
+    const isFeriado = feriadosFixos.includes(diaStr);
+    const isDescanso = descansoSemanal.includes(diaSemanaNum);
+
+    // Adiciona a classe "folga" se for descanso
+    let classe = "";
+    if (isDomingo) classe = "domingo";
+    else if (isFeriado) classe = "feriado";
+    if (isDescanso) classe += (classe ? " " : "") + "folga";
+
+    html += `<tr class="${classe}">
+      <td>${d.getDate()}/${d.getMonth()+1}</td>
+      <td>${diaSemana}</td>
+      <td>
+        <select class="situacao" onchange="calcular(this)">
+          <option value="">-</option>
+          <option value="trabalho">Trabalho</option>
+          <option value="feriado">Feriado</option>
+          <option value="abonado">Abonado</option>
+          <option value="atestado">Atestado</option>
+          <option value="falta">Falta</option>
+          <option value="folga">Folga</option>
+          <option value="excecao">Exceção</option>
+        </select>
+      </td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td><input type="time" onchange="calcular(this)" /></td>
+      <td class="horasTrabalhadas"></td>
+      <td class="extras"></td>
+      <td class="faltas"></td>
+      <td class="noturnas"></td>
+      <td class="horasAbonadas"></td>
+    </tr>`;
+    d.setDate(d.getDate() + 1);
+  }
+
+  // Totalizadores
+  html += `</tbody>
+    <tfoot>
+      <tr style="font-weight:bold;background:#e9e9e9;">
+        <td colspan="7" style="text-align:right;">Totais:</td>
+        <td id="totalHoras"></td>
+        <td id="totalExtras"></td>
+        <td id="totalFaltas"></td>
+        <td id="totalNoturnas"></td>
+        <td id="totalAbonadas"></td>
+      </tr>
+      <tr style="font-weight:bold;background:#e0e0e0;">
+        <td colspan="7" style="text-align:right;">Total Jornada Prevista no Período:</td>
+        <td id="totalJornadaMes" colspan="5"></td>
+      </tr>
+    </tfoot>`;
+
+  html += "</table>";
+  
+  const painel = document.getElementById('painelPlanilha');
+  painel.innerHTML = html;
+  
+  // Atualiza as folgas na tabela
+  atualizarFolgasNaTabela();
+  
+  // Inicializa os totais
+  atualizarTotais();
+
+  // Atualiza o total de jornada prevista no período
+  const totalJornadaMesEl = document.getElementById("totalJornadaMes");
+  if (totalJornadaMesEl && dataInicial && dataFinal) {
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+}
+
+// Modifique a função gerarPlanilhaComValidacao
+function gerarPlanilhaComValidacao() {
+  // Gera a tabela
+  gerarTabela();
+  
+  // Mostra tanto o painel de configuração quanto a planilha
+  document.getElementById('painelConfig').style.display = '';
+  document.getElementById('painelPlanilha').style.display = '';
+  
+  // Reorganiza os elementos para que a configuração apareça abaixo da planilha
+  const container = document.querySelector('div[style*="display: flex"]');
+  if (container) {
+    container.style.flexDirection = 'column';
+    
+    // Move o painel da planilha para cima
+    const painelPlanilha = document.getElementById('painelPlanilha');
+    const painelConfig = document.getElementById('painelConfig');
+    if (painelPlanilha && painelConfig && container.contains(painelConfig) && container.contains(painelPlanilha)) {
+      container.insertBefore(painelPlanilha, painelConfig);
+    }
+  }
+  
+  // Altera o título do painel de configuração
+  const configTitle = document.querySelector('#painelConfig h4');
+  if (configTitle) {
+    configTitle.textContent = 'Configuração Semanal (não será impressa)';
+  }
+  
+  // Adiciona o botão de impressão
+  adicionarBotaoImprimir();
+  
+  // Rola para a tabela gerada
+  setTimeout(() => {
+    document.getElementById('painelPlanilha').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Modifique a função mostrarConfiguracoes para apenas rolar até a configuração
+function mostrarConfiguracoes() {
+  // Garantir que ambos os painéis estejam visíveis
+  document.getElementById('painelConfig').style.display = '';
+  document.getElementById('painelPlanilha').style.display = '';
+  
+  // Rolar até o painel de configuração
+  setTimeout(() => {
+    document.getElementById('painelConfig').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// Modifique a função window.onload para iniciar com os dois painéis visíveis
+window.onload = function() {
+  // Define mês e ano atuais
+  const hoje = new Date();
+  
+  // Define datas padrão (início e fim do mês atual)
+  const dataInicialEl = document.getElementById('dataInicial');
+  const dataFinalEl = document.getElementById('dataFinal');
+  if (dataInicialEl && dataFinalEl) {
+    const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    
+    dataInicialEl.value = primeiroDia.toISOString().split('T')[0];
+    dataFinalEl.value = ultimoDia.toISOString().split('T')[0];
+  }
+  
+  // Garantir que o mês e ano estejam definidos se os inputs existirem
+  const mesEl = document.getElementById('mes');
+  const anoEl = document.getElementById('ano');
+  if (mesEl && anoEl) {
+    mesEl.value = hoje.getMonth();
+    anoEl.value = hoje.getFullYear();
+  }
+  
+  // Iniciar com configuração visível
+  document.getElementById('painelConfig').style.display = 'block';
+  document.getElementById('painelPlanilha').style.display = 'none';
+  
+  // Alterar o título do painel de configuração já no início
+  const configTitle = document.querySelector('#painelConfig h4');
+  if (configTitle) {
+    configTitle.textContent = 'Configuração Semanal (não será impressa)';
+  }
+  
+  // Reorganizar o container flex para mostrar configuração em posição adequada
+  const container = document.querySelector('div[style*="display: flex"]');
+  if (container) {
+    container.style.flexDirection = 'column';
+    container.style.gap = '16px';
+  }
+  
+  // Garantir que o painel seja visível no início
+  document.getElementById('painelConfig').style.margin = '20px 0';
+  
+  // Inicializa o total semanal
+  atualizaTotalSemanal();
+  
+  // Verificação de termos
+  verificarTermos();
+};
+
+// Variável para armazenar a linha atual sendo abonada
+let linhaAtualAbono = null;
+
+// Função para abrir o modal de abono
+function abrirModalAbono(row) {
+  // Armazena a linha atual para usar quando confirmar
+  linhaAtualAbono = row;
+  
+  // Verifica se já existe um valor de abono e preenche o campo
+  const valorAtual = row.getAttribute('data-abono-min');
+  const inputAbono = document.getElementById('inputHorasAbonadas');
+  
+  if (valorAtual) {
+    const horas = Math.floor(valorAtual / 60);
+    const minutos = valorAtual % 60;
+    inputAbono.value = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+  } else {
+    inputAbono.value = "00:00";
+  }
+  
+  // Exibe o modal
+  const modal = document.getElementById('modalAbono');
+  modal.style.display = 'flex';
+}
+
+// Função para confirmar o abono
+function confirmarAbono() {
+  if (!linhaAtualAbono) return;
+  
+  // Pega o valor digitado no modal
+  const valorAbono = document.getElementById('inputHorasAbonadas').value;
+  
+  // Adiciona ou atualiza o campo de abono na linha
+  const celulaAbono = linhaAtualAbono.querySelector('.horasAbonadas');
+  
+  // Verifica se já existe um input para abono, senão cria
+  let inputAbono = celulaAbono.querySelector('input');
+  if (!inputAbono) {
+    inputAbono = document.createElement('input');
+    inputAbono.type = 'time';
+    inputAbono.onchange = function() { calcular(this); };
+    celulaAbono.innerHTML = '';
+    celulaAbono.appendChild(inputAbono);
+  }
+  
+  // Define o valor do abono
+  inputAbono.value = valorAbono;
+  
+  // Fecha o modal
+  fecharModalAbono();
+  
+  // Recalcula os valores
+  calcular(inputAbono);
+}
+
+// Função para fechar o modal
+function fecharModalAbono() {
+  document.getElementById('modalAbono').style.display = 'none';
+  linhaAtualAbono = null;
+}
+
+function atualizarTotais() {
+  // Busca a tabela dentro do painelPlanilha (corrigindo o seletor)
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+
+  // Inicializa os totais
+  let totalHorasTrabalhadas = 0;
+  let totalExtras = 0;
+  let totalFaltas = 0;
+  let totalNoturnas = 0;
+  let totalAbonadas = 0;
+
+  // Percorre todas as linhas do corpo da tabela
+  const linhas = tabela.querySelectorAll('tbody tr');
+  
+  for (let linha of linhas) {
+    // Função auxiliar para converter formato "XhYYm" para minutos
+    function converterParaMinutos(texto) {
+      if (!texto || texto === '-' || texto.trim() === '') return 0;
+      
+      // Extrai horas e minutos usando regex
+      const match = texto.match(/(\d+)h(\d+)m/);
+      if (match) {
+        const horas = parseInt(match[1]);
+        const minutos = parseInt(match[2]);
+        return horas * 60 + minutos;
+      }
+      return 0;
+    }
+    
+    // Extrai e soma os valores
+    const horasTrabalhadas = converterParaMinutos(linha.querySelector('.horasTrabalhadas').innerText);
+    const extras = converterParaMinutos(linha.querySelector('.extras').innerText);
+    const faltas = converterParaMinutos(linha.querySelector('.faltas').innerText);
+    const noturnas = converterParaMinutos(linha.querySelector('.noturnas').innerText);
+    
+    // Para horas abonadas, precisamos verificar se há um input
+    let abonadas = 0;
+    const celulaAbono = linha.querySelector('.horasAbonadas');
+    const inputAbono = celulaAbono.querySelector('input');
+    if (inputAbono && inputAbono.value) {
+      const [h, m] = inputAbono.value.split(':').map(Number);
+      abonadas = h * 60 + m;
+    } else if (linha.getAttribute('data-abono-min')) {
+      abonadas = parseInt(linha.getAttribute('data-abono-min'));
+    }
+    
+    // Acumula os totais
+    totalHorasTrabalhadas += horasTrabalhadas;
+    totalExtras += extras;
+    totalFaltas += faltas;
+    totalNoturnas += noturnas;
+    totalAbonadas += abonadas;
+  }
+  
+  // Função auxiliar para formatar minutos como "XhYYm"
+  function formatarMinutos(minutos) {
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
+    return `${horas}h${mins.toString().padStart(2, '0')}m`;
+  }
+  
+  // Atualiza os totais na tabela - corrigindo acesso direto aos elementos
+  const totalHorasEl = document.getElementById('totalHoras');
+  const totalExtrasEl = document.getElementById('totalExtras');
+  const totalFaltasEl = document.getElementById('totalFaltas');
+  const totalNoturnasEl = document.getElementById('totalNoturnas');
+  const totalAbonadasEl = document.getElementById('totalAbonadas');
+
+  if (totalHorasEl) totalHorasEl.innerText = formatarMinutos(totalHorasTrabalhadas);
+  if (totalExtrasEl) totalExtrasEl.innerText = formatarMinutos(totalExtras);
+  if (totalFaltasEl) totalFaltasEl.innerText = formatarMinutos(totalFaltas);
+  if (totalNoturnasEl) totalNoturnasEl.innerText = formatarMinutos(totalNoturnas);
+  if (totalAbonadasEl) totalAbonadasEl.innerText = formatarMinutos(totalAbonadas);
+}
+
+// Função para imprimir a planilha
+function adicionarBotaoImprimir() {
+  // Função já implementada no seu código
+}
+
+// Função simples para impressão
+function imprimir() {
+  window.print();
+}
+
+function atualizarFolgasNaTabela() {
+  const descanso = getDescansoSemanal(); // array de números dos dias de descanso
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+  const linhas = tabela.querySelectorAll('tbody tr');
+  for (let linha of linhas) {
+    // O dia da semana está na segunda coluna (índice 1)
+    const diaSemanaNome = linha.cells[1]?.innerText?.toLowerCase();
+    // Mapeamento para número do dia da semana (0=domingo, 1=segunda, ...)
+    const mapa = {
+      'domingo': 0, 'segunda-feira': 1, 'segunda': 1, 'terça-feira': 2, 'terça': 2,
+      'quarta-feira': 3, 'quarta': 3, 'quinta-feira': 4, 'quinta': 4,
+      'sexta-feira': 5, 'sexta': 5, 'sábado': 6, 'sabado': 6
+    };
+    const diaNum = mapa[diaSemanaNome];
+    if (descanso.includes(diaNum)) {
+      linha.classList.add('folga');
+    } else {
+      linha.classList.remove('folga');
+    }
+  }
+}
+
+// Função para atualizar o total semanal de jornada na configuração
+function atualizaTotalSemanal() {
+  let totalMinutos = 0;
+  const diasSemana = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+  
+  for (let i = 0; i < 7; i++) {
+    const jornadaInput = document.getElementById(`jornada_${diasSemana[i]}`);
+    const descansoCheck = document.querySelector(`input[name="descanso"][value="${i}"]`);
+    
+    if (jornadaInput && jornadaInput.value && (!descansoCheck || !descansoCheck.checked)) {
+      const [h, m] = jornadaInput.value.split(':').map(Number);
+      totalMinutos += h * 60 + m;
+    }
+  }
+  
+  const horas = Math.floor(totalMinutos / 60);
+  const minutos = totalMinutos % 60;
+  
+  const totalElement = document.getElementById('totalJornadaSemanal');
+  if (totalElement) {
+    totalElement.innerText = `Total Semanal: ${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+  
+  // Atualiza também o total de jornada do período se a planilha estiver visível
+  atualizarTotalJornadaPeriodo();
+}
+
+// Função para atualizar o total de jornada do período
+function atualizarTotalJornadaPeriodo() {
+  const totalJornadaMesEl = document.getElementById('totalJornadaMes');
+  if (!totalJornadaMesEl) return;
+  
+  const dataInicialStr = document.getElementById('dataInicial')?.value;
+  const dataFinalStr = document.getElementById('dataFinal')?.value;
+  
+  if (dataInicialStr && dataFinalStr) {
+    const dataInicial = new Date(dataInicialStr + "T00:00:00");
+    const dataFinal = new Date(dataFinalStr + "T00:00:00");
+    const totalMinutos = calcularTotalJornadaPeriodo(dataInicial, dataFinal);
+    const horas = Math.floor(totalMinutos / 60);
+    const minutos = totalMinutos % 60;
+    totalJornadaMesEl.innerText = `${horas}h${minutos.toString().padStart(2, '0')}m`;
+  }
+}
+
+// Função para recalcular todas as linhas da planilha quando a configuração muda
+function recalcularTodasAsLinhas() {
+  const tabela = document.querySelector('#painelPlanilha table');
+  if (!tabela) return;
+  
+  const linhas = tabela.querySelectorAll('tbody tr');
+  for (let linha of linhas) {
+    // Encontra o primeiro input de horário para disparar o recálculo
+    const primeiroInput = linha.querySelector('input[type="time"]');
+    if (primeiroInput) {
+      calcular(primeiroInput);
+    }
+  }
+}
+
+// Função para verificar termos de uso (placeholder)
+function verificarTermos() {
+  // Implementação dos termos de uso se necessária
+  // Por enquanto apenas uma função vazia para evitar erros
+  console.log('Verificação de termos executada');
+}
+
+// Função para aceitar termos (se o modal de termos for usado)
+function aceitarTermos() {
+  const modal = document.getElementById('termos-uso-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// ========== FUNÇÕES DE SALVAR E CARREGAR DADOS ==========
+
+/**
+ * Salva todos os dados da planilha em um arquivo TXT
+ */
+function salvarDados() {
+  try {
+    // Cria objeto com todos os dados
+    const dados = {
+      versao: '1.0',
+      dataExportacao: new Date().toISOString(),
+      
+      // Informações do funcionário e empresa
+      informacoesPessoais: {
+        empresa: document.getElementById('empresa')?.value || '',
+        funcionario: document.getElementById('funcionario')?.value || ''
+      },
+      
+      // Dados das configurações de período
+      configuracaoPeriodo: {
+        dataInicial: document.getElementById('dataInicial')?.value || '',
+        dataFinal: document.getElementById('dataFinal')?.value || '',
+        mes: document.getElementById('mes')?.value || '',
+        ano: document.getElementById('ano')?.value || ''
+      },
+      
+      // Configuração semanal de jornada
+      configuracaoSemanal: {
+        segunda: {
+          jornada: document.getElementById('jornada_seg')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="1"]')?.checked || false
+        },
+        terca: {
+          jornada: document.getElementById('jornada_ter')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="2"]')?.checked || false
+        },
+        quarta: {
+          jornada: document.getElementById('jornada_qua')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="3"]')?.checked || false
+        },
+        quinta: {
+          jornada: document.getElementById('jornada_qui')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="4"]')?.checked || false
+        },
+        sexta: {
+          jornada: document.getElementById('jornada_sex')?.value || '08:00',
+          descanso: document.querySelector('input[name="descanso"][value="5"]')?.checked || false
+        },
+        sabado: {
+          jornada: document.getElementById('jornada_sab')?.value || '04:00',
+          descanso: document.querySelector('input[name="descanso"][value="6"]')?.checked || false
+        },
+        domingo: {
+          jornada: document.getElementById('jornada_dom')?.value || '00:00',
+          descanso: document.querySelector('input[name="descanso"][value="0"]')?.checked || false
+        }
+      },
+      
+      // Dados da planilha
+      registros: []
+    };
+    
+    // Captura todos os registros da tabela
+    const tabela = document.querySelector('#painelPlanilha table');
+    if (tabela) {
+      const linhas = tabela.querySelectorAll('tbody tr');
+      
+      linhas.forEach((linha, index) => {
+        const registro = {
+          linha: index + 1,
+          dia: linha.cells[0]?.innerText || '',
+          diaSemana: linha.cells[1]?.innerText || '',
+          situacao: linha.cells[2]?.querySelector('select')?.value || '',
+          entrada1: linha.cells[3]?.querySelector('input')?.value || '',
+          saida1: linha.cells[4]?.querySelector('input')?.value || '',
+          entrada2: linha.cells[5]?.querySelector('input')?.value || '',
+          saida2: linha.cells[6]?.querySelector('input')?.value || '',
+          horasTrabalhadas: linha.querySelector('.horasTrabalhadas')?.innerText || '',
+          extras: linha.querySelector('.extras')?.innerText || '',
+          faltas: linha.querySelector('.faltas')?.innerText || '',
+          noturnas: linha.querySelector('.noturnas')?.innerText || '',
+          horasAbonadas: linha.querySelector('.horasAbonadas input')?.value || '',
+          classes: linha.className || ''
+        };
+        
+        dados.registros.push(registro);
+      });
+    }
+    
+    // Converte para JSON formatado (mais legível)
+    const jsonString = JSON.stringify(dados, null, 2);
+    
+    // Cria o arquivo para download
+    const blob = new Blob([jsonString], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Nome do arquivo: Nome_AAAAMMDD.txt
+    const nomeFuncionario = document.getElementById('funcionario')?.value || 'Sem_Nome';
+    
+    // Limpa o nome do funcionário (remove caracteres especiais e espaços)
+    const nomeLimpo = nomeFuncionario
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^a-zA-Z0-9]/g, '_')    // Substitui caracteres especiais por _
+      .replace(/_+/g, '_')               // Remove underscores duplicados
+      .replace(/^_|_$/g, '')             // Remove underscores no início e fim
+      .substring(0, 30);                 // Limita a 30 caracteres
+    
+    // Formato da data: AAAAMMDD (usa data atual do dispositivo)
+    const hoje = new Date();
+    const periodoStr = `${hoje.getFullYear()}${(hoje.getMonth()+1).toString().padStart(2,'0')}${hoje.getDate().toString().padStart(2,'0')}`;
+    
+    // Monta o nome do arquivo: Nome_AAAAMMDD.txt
+    const nomeArquivo = `${nomeLimpo}_${periodoStr}.txt`;
+    
+    link.href = url;
+    link.download = nomeArquivo;
+    link.click();
+    
+    // Limpa a URL temporária
+    URL.revokeObjectURL(url);
+    
+    alert('✅ Dados salvos com sucesso!\n\nArquivo: ' + nomeArquivo);
+    
+  } catch (erro) {
+    console.error('Erro ao salvar dados:', erro);
+    alert('❌ Erro ao salvar dados. Verifique o console para mais detalhes.');
+  }
+}
+
+/**
+ * Carrega dados de um arquivo TXT previamente salvo
+ */
+function carregarDados(evento) {
+  const arquivo = evento.target.files[0];
+  
+  if (!arquivo) {
+    return;
+  }
+  
+  // Verifica se é um arquivo TXT
+  if (!arquivo.name.endsWith('.txt')) {
+    alert('⚠️ Por favor, selecione um arquivo .txt válido!');
+    return;
+  }
+  
+  const leitor = new FileReader();
+  
+  leitor.onload = function(e) {
+    try {
+      // Parse do JSON
+      const dados = JSON.parse(e.target.result);
+      
+      // Valida a versão
+      if (!dados.versao) {
+        throw new Error('Arquivo inválido: versão não encontrada');
+      }
+      
+      // Restaura informações do funcionário e empresa
+      if (dados.informacoesPessoais) {
+        if (dados.informacoesPessoais.empresa) {
+          const empresaEl = document.getElementById('empresa');
+          if (empresaEl) empresaEl.value = dados.informacoesPessoais.empresa;
+        }
+        
+        if (dados.informacoesPessoais.funcionario) {
+          const funcionarioEl = document.getElementById('funcionario');
+          if (funcionarioEl) funcionarioEl.value = dados.informacoesPessoais.funcionario;
+        }
+      }
+      
+      // Restaura as configurações de período
+      if (dados.configuracaoPeriodo) {
+        if (dados.configuracaoPeriodo.dataInicial) {
+          const dataInicialEl = document.getElementById('dataInicial');
+          if (dataInicialEl) dataInicialEl.value = dados.configuracaoPeriodo.dataInicial;
+        }
+        
+        if (dados.configuracaoPeriodo.dataFinal) {
+          const dataFinalEl = document.getElementById('dataFinal');
+          if (dataFinalEl) dataFinalEl.value = dados.configuracaoPeriodo.dataFinal;
+        }
+        
+        if (dados.configuracaoPeriodo.mes) {
+          const mesEl = document.getElementById('mes');
+          if (mesEl) mesEl.value = dados.configuracaoPeriodo.mes;
+        }
+        
+        if (dados.configuracaoPeriodo.ano) {
+          const anoEl = document.getElementById('ano');
+          if (anoEl) anoEl.value = dados.configuracaoPeriodo.ano;
+        }
+      }
+      
+      // Restaura a configuração semanal
+      if (dados.configuracaoSemanal) {
+        // Segunda
+        if (dados.configuracaoSemanal.segunda) {
+          document.getElementById('jornada_seg').value = dados.configuracaoSemanal.segunda.jornada;
+          document.querySelector('input[name="descanso"][value="1"]').checked = dados.configuracaoSemanal.segunda.descanso;
+        }
+        
+        // Terça
+        if (dados.configuracaoSemanal.terca) {
+          document.getElementById('jornada_ter').value = dados.configuracaoSemanal.terca.jornada;
+          document.querySelector('input[name="descanso"][value="2"]').checked = dados.configuracaoSemanal.terca.descanso;
+        }
+        
+        // Quarta
+        if (dados.configuracaoSemanal.quarta) {
+          document.getElementById('jornada_qua').value = dados.configuracaoSemanal.quarta.jornada;
+          document.querySelector('input[name="descanso"][value="3"]').checked = dados.configuracaoSemanal.quarta.descanso;
+        }
+        
+        // Quinta
+        if (dados.configuracaoSemanal.quinta) {
+          document.getElementById('jornada_qui').value = dados.configuracaoSemanal.quinta.jornada;
+          document.querySelector('input[name="descanso"][value="4"]').checked = dados.configuracaoSemanal.quinta.descanso;
+        }
+        
+        // Sexta
+        if (dados.configuracaoSemanal.sexta) {
+          document.getElementById('jornada_sex').value = dados.configuracaoSemanal.sexta.jornada;
+          document.querySelector('input[name="descanso"][value="5"]').checked = dados.configuracaoSemanal.sexta.descanso;
+        }
+        
+        // Sábado
+        if (dados.configuracaoSemanal.sabado) {
+          document.getElementById('jornada_sab').value = dados.configuracaoSemanal.sabado.jornada;
+          document.querySelector('input[name="descanso"][value="6"]').checked = dados.configuracaoSemanal.sabado.descanso;
+        }
+        
+        // Domingo
+        if (dados.configuracaoSemanal.domingo) {
+          document.getElementById('jornada_dom').value = dados.configuracaoSemanal.domingo.jornada;
+          document.querySelector('input[name="descanso"][value="0"]').checked = dados.configuracaoSemanal.domingo.descanso;
+        }
+        
+        // Atualiza o total semanal
+        atualizaTotalSemanal();
+      }
+      
+      // Gera a planilha primeiro
+      gerarPlanilhaComValidacao();
+      
+      // Aguarda um pouco para garantir que a tabela foi gerada
+      setTimeout(() => {
+        // Restaura os dados da planilha
+        if (dados.registros && dados.registros.length > 0) {
+          const tabela = document.querySelector('#painelPlanilha table');
+          
+          if (tabela) {
+            const linhas = tabela.querySelectorAll('tbody tr');
+            
+            dados.registros.forEach((registro, index) => {
+              if (index < linhas.length) {
+                const linha = linhas[index];
+                
+                // Restaura a situação
+                const selectSituacao = linha.cells[2]?.querySelector('select');
+                if (selectSituacao && registro.situacao) {
+                  selectSituacao.value = registro.situacao;
+                }
+                
+                // Restaura os horários
+                if (registro.entrada1) {
+                  const inputEntrada1 = linha.cells[3]?.querySelector('input');
+                  if (inputEntrada1) inputEntrada1.value = registro.entrada1;
+                }
+                
+                if (registro.saida1) {
+                  const inputSaida1 = linha.cells[4]?.querySelector('input');
+                  if (inputSaida1) inputSaida1.value = registro.saida1;
+                }
+                
+                if (registro.entrada2) {
+                  const inputEntrada2 = linha.cells[5]?.querySelector('input');
+                  if (inputEntrada2) inputEntrada2.value = registro.entrada2;
+                }
+                
+                if (registro.saida2) {
+                  const inputSaida2 = linha.cells[6]?.querySelector('input');
+                  if (inputSaida2) inputSaida2.value = registro.saida2;
+                }
+                
+                // Restaura horas abonadas se existir
+                if (registro.horasAbonadas) {
+                  const celulaAbono = linha.querySelector('.horasAbonadas');
+                  if (celulaAbono) {
+                    let inputAbono = celulaAbono.querySelector('input');
+                    if (!inputAbono) {
+                      inputAbono = document.createElement('input');
+                      inputAbono.type = 'time';
+                      inputAbono.onchange = function() { calcular(this); };
+                      celulaAbono.innerHTML = '';
+                      celulaAbono.appendChild(inputAbono);
+                    }
+                    inputAbono.value = registro.horasAbonadas;
+                  }
+                }
+                
+                // Recalcula a linha
+                const primeiroInput = linha.querySelector('input[type="time"]');
+                if (primeiroInput) {
+                  calcular(primeiroInput);
+                }
+              }
+            });
+            
+            // Atualiza os totais finais
+            atualizarTotais();
+          }
+        }
+        
+        // Monta mensagem de sucesso com informações do funcionário
+        let mensagem = '✅ Dados carregados com sucesso!\n\n';
+        
+        if (dados.informacoesPessoais) {
+          if (dados.informacoesPessoais.funcionario) {
+            mensagem += '👤 Funcionário: ' + dados.informacoesPessoais.funcionario + '\n';
+          }
+          if (dados.informacoesPessoais.empresa) {
+            mensagem += '🏢 Empresa: ' + dados.informacoesPessoais.empresa + '\n';
+          }
+          mensagem += '\n';
+        }
+        
+        mensagem += '📅 Data da exportação: ' + new Date(dados.dataExportacao).toLocaleString('pt-BR') + '\n';
+        mensagem += '📋 Registros carregados: ' + dados.registros.length;
+        
+        alert(mensagem);
+        
+      }, 500);
+      
+    } catch (erro) {
+      console.error('Erro ao carregar dados:', erro);
+      alert('❌ Erro ao carregar dados.\n\nVerifique se o arquivo é válido e não foi corrompido.\n\nDetalhes: ' + erro.message);
+    }
+  };
+  
+  leitor.onerror = function() {
+    alert('❌ Erro ao ler o arquivo. Tente novamente.');
+  };
+  
+  // Lê o arquivo como texto
+  leitor.readAsText(arquivo);
+  
+  // Limpa o input para permitir carregar o mesmo arquivo novamente
+  evento.target.value = '';
+}
 </script>
+
+<style>
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 1cm 1cm 2cm 1cm; /* margem inferior maior para o rodapé */
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: white !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+    #painelPlanilha {
+      box-shadow: none !important;
+      border: none !important;
+      padding: 0 !important;
+      background: white !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+    #painelPlanilha table {
+      width: 100% !important;
+      font-size: 11px !important;
+      table-layout: fixed;
+      page-break-inside: auto;
+    }
+    #painelPlanilha table thead,
+    #painelPlanilha table thead th {
+      position: static !important;
+      box-shadow: none !important;
+      background: #e9ecef !important;
+      color: #333 !important;
+    }
+    th, td {
+      padding: 4px 2px !important;
+      font-size: 11px !important;
+      word-break: break-word;
+      page-break-inside: avoid;
+    }
+    tr {
+      page-break-inside: avoid;
+    }
+    tr.domingo, tr.feriado {
+      border-left: none;
+    }
+    /* Oculta elementos que não precisam ser impressos */
+    #painelConfig, button, #copyright-notice {
+      display: none !important;
+    }
+    /* Mostra o rodapé de impressão com copyright */
+    #print-footer {
+      display: block !important;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100vw;
+      text-align: center;
+      font-size: 10px;
+      color: #999;
+      border-top: 1px solid #eee;
+      padding-top: 3px;
+      margin: 0;
+      background: white;
+      z-index: 9999;
+    }
+    body {
+      margin-bottom: 40px !important; /* espaço extra para o rodapé */
+    }
+  }
+
+  
+  /* Ajusta o espaçamento dos cabeçalhos para evitar lacunas */
+  #tabelaContainer table thead th {
+    border-bottom: 2px solid var(--primary-light);
+  }
+
+  /* Estiliza a barra de rolagem para melhor experiência visual */
+  #tabelaContainer::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-track {
+    background: var(--gray-200);
+    border-radius: 5px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 5px;
+  }
+
+  #tabelaContainer::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+  }
+/* Classe para destacar dias de descanso (folga) */
+tr.folga {
+  background: #e6ffe6 !important; /* verde claro */
+  border-left: 3px solid #4bdb4b;
+}
+
+/* Estilos especiais para os botões de salvar e carregar */
+button[onclick*="salvarDados"] {
+  background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%) !important;
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+}
+
+button[onclick*="salvarDados"]:hover {
+  background: linear-gradient(90deg, #4caf50 60%, #66bb6a 100%) !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+  transform: translateY(-2px);
+}
+
+button[onclick*="fileInput"] {
+  background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%) !important;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+button[onclick*="fileInput"]:hover {
+  background: linear-gradient(90deg, #42a5f5 60%, #64b5f6 100%) !important;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Animação de pulso para destacar os novos botões */
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(46, 125, 50, 0.6);
+  }
+}
+
+button[onclick*="salvarDados"],
+button[onclick*="fileInput"] {
+  animation: pulse 2s ease-in-out 3;
+}
+</style>
+
 </body>
 </html>
