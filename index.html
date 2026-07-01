@@ -379,32 +379,32 @@ select {
 
 <h2>Planilha de Ponto Mensal</h2>
 
-<div style="margin-bottom: 16px;">
-  <label>Empresa:
-    <input type="text" id="empresa" placeholder="Nome da Empresa" style="width:320px;">
+<div class="linha-form">
+  <label class="campo-form">Empresa:
+    <input type="text" id="empresa" placeholder="Nome da Empresa">
   </label>
-  <label style="margin-left: 24px;">Funcionário:
-    <input type="text" id="funcionario" placeholder="Nome do Funcionário" style="width:250px;">
+  <label class="campo-form">Funcionário:
+    <input type="text" id="funcionario" placeholder="Nome do Funcionário">
   </label>
 </div>
 
-<div style="margin-bottom: 16px;">
-  <label>Data Inicial:
+<div class="linha-form">
+  <label class="campo-form campo-data">Data Inicial:
     <input type="date" id="dataInicial">
   </label>
-  <label style="margin-left: 24px;">Data Final:
+  <label class="campo-form campo-data">Data Final:
     <input type="date" id="dataFinal">
   </label>
 </div>
 
-<div style="margin: 18px 0;">
-  <button onclick="gerarPlanilhaComValidacao()" style="padding:8px 24px; font-size:16px;">Gerar Planilha</button>
-  <button id="btnConfig" onclick="mostrarConfiguracoes()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Configuração Semanal</button>
-  <button onclick="window.print()" style="padding:8px 24px; font-size:16px; margin-left:16px;">Imprimir</button>
-  <button onclick="abrirModalSalvar()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
-  <button onclick="document.getElementById('fileInput').click()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);">📂 Carregar Dados</button>
+<div class="barra-botoes">
+  <button onclick="gerarPlanilhaComValidacao()">Gerar Planilha</button>
+  <button id="btnConfig" onclick="mostrarConfiguracoes()">Configuração Semanal</button>
+  <button onclick="window.print()">Imprimir</button>
+  <button onclick="abrirModalSalvar()" style="background: linear-gradient(90deg, #2e7d32 60%, #4caf50 100%);">💾 Salvar Dados</button>
+  <button onclick="document.getElementById('fileInput').click()" style="background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);">📂 Carregar Dados</button>
   <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="carregarDados(event)">
-  <button onclick="abrirWhatsApp()" style="padding:8px 24px; font-size:16px; margin-left:16px; background: linear-gradient(90deg, #25D366 60%, #128C7E 100%);">💬 Dúvidas WhatsApp</button>
+  <button onclick="abrirWhatsApp()" style="background: linear-gradient(90deg, #25D366 60%, #128C7E 100%);">💬 Dúvidas WhatsApp</button>
 </div>
 
 <div style="display: flex; gap: 32px;">
@@ -478,6 +478,12 @@ select {
 <div id="print-footer" style="display:none">
   <p>&copy; 2025 Rogério Stranieri. Todos os direitos reservados.</p>
 </div>
+
+<!-- Form oculto para envio sem CORS -->
+<iframe id="gas-ponto-iframe" name="gas-ponto-iframe" style="display:none"></iframe>
+<form id="gas-ponto-form" method="POST" target="gas-ponto-iframe" style="display:none">
+  <input type="hidden" name="payload" id="gas-ponto-payload">
+</form>
 
 <!-- Modal: Salvar ou Enviar Dados -->
 <div id="modalSalvar" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);z-index:2000;align-items:center;justify-content:center;">
@@ -1886,7 +1892,7 @@ async function enviarPorEmail() {
     const txtBase64 = _toBase64UTF8(jsonString);
     const periodo   = gerarPeriodoStr();
 
-    const body = JSON.stringify({
+    const payload = JSON.stringify({
       chave: "betel-2026-ponto",
       empresa, funcionario, periodo,
       emailHtml:   gerarEmailHtmlPonto(empresa, funcionario, periodo),
@@ -1894,24 +1900,16 @@ async function enviarPorEmail() {
       nomeArquivo
     });
 
-    const fetchOpts = { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body };
+    // <form target=iframe> contorna CORS nativamente — browser envia direto ao GAS
+    const form = document.getElementById('gas-ponto-form');
+    form.action = PONTO_GAS_URL;
+    document.getElementById('gas-ponto-payload').value = payload;
+    form.submit();
 
-    let resultado;
-    try {
-      const resp = await fetch(PONTO_GAS_URL, fetchOpts);
-      resultado  = await resp.json();
-    } catch (_) {
-      await fetch(PONTO_GAS_URL, Object.assign({}, fetchOpts, { mode: 'no-cors' }));
-      resultado = { status: 'ok' };
-    }
-
+    await new Promise(r => setTimeout(r, 1500));
     fecharModalSalvar();
+    alert('✅ Solicitação enviada!\n\nO email com o arquivo .txt chegará em rhbetel@outlook.com.br em instantes.\n\nSe não chegar em 2 minutos, verifique o log de Execuções no Apps Script.');
 
-    if (resultado.status === 'ok') {
-      alert('✅ Planilha enviada com sucesso!\n\nEmail com arquivo .txt em anexo enviado ao escritório Betel.');
-    } else {
-      alert('⚠️ ' + (resultado.message || 'Erro no envio. Salve localmente e envie o arquivo manualmente.'));
-    }
   } catch (err) {
     console.error(err);
     fecharModalSalvar();
@@ -2127,6 +2125,96 @@ button[onclick*="abrirWhatsApp"]:hover {
 
 @media print {
   #modalSalvar { display: none !important; }
+}
+
+/* ─── Responsividade geral ─── */
+body {
+  padding: 12px 16px;
+  box-sizing: border-box;
+}
+
+.linha-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-bottom: 16px;
+  align-items: flex-end;
+}
+.campo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 180px;
+}
+.campo-form.campo-data {
+  flex: 0 1 auto;
+  min-width: 150px;
+}
+.campo-form input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.barra-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+.barra-botoes button {
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+#painelPlanilha {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile: tudo em coluna, botões se expandem */
+@media (max-width: 640px) {
+  body { padding: 8px 10px; }
+  h2   { font-size: 22px; }
+
+  .campo-form,
+  .campo-form.campo-data {
+    flex: 1 1 100%;
+  }
+
+  .barra-botoes button {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 130px;
+    font-size: 13px !important;
+    padding: 9px 8px !important;
+    text-align: center;
+  }
+
+  /* Painel de configuração semanal ocupa largura total */
+  #painelConfig {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Container flex planilha+config vira coluna */
+  div[style*="display: flex"][style*="gap: 32px"],
+  div[style*="display: flex"][style*="gap:32px"] {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* Tabela: fonte menor no celular */
+  th, td { font-size: 12px !important; padding: 6px 3px !important; }
+}
+
+@media (max-width: 400px) {
+  .barra-botoes button {
+    flex: 1 1 100%;
+  }
 }
 </style>
 
