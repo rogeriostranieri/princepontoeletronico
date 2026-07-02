@@ -518,6 +518,30 @@ select {
   </div>
 </div>
 
+<!-- Modal: Confirmação de Envio por Email -->
+<div id="modalEnvioSucesso" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);z-index:2100;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,0.22);width:390px;max-width:92vw;overflow:hidden;">
+    <div style="background:#2e7d32;padding:18px 22px;">
+      <div style="color:#fff;font-size:17px;font-weight:700;">✅ Email Enviado!</div>
+      <div style="color:#c8e6c9;font-size:12px;margin-top:3px;">A solicitação foi enviada com sucesso</div>
+    </div>
+    <div style="padding:20px 22px;">
+      <div style="font-size:13px;color:#444;line-height:1.5;margin-bottom:16px;">
+        O email com o arquivo .txt chegará em <strong>rhbetel@outlook.com.br</strong> em instantes.
+        Se preferir, salve também uma cópia de backup no seu dispositivo.
+      </div>
+      <button onclick="salvarLocalmente(); fecharModalEnvioSucesso();" class="btn-modal-opcao" style="background:linear-gradient(90deg,#2e7d32 60%,#4caf50 100%);">
+        <span style="font-size:24px;line-height:1;">💾</span>
+        <span>
+          <strong style="display:block;font-size:15px;">Salvar Backup</strong>
+          <small>Baixa uma cópia do arquivo .txt no seu dispositivo</small>
+        </span>
+      </button>
+      <button onclick="fecharModalEnvioSucesso()" style="width:100%;margin-top:14px;padding:9px;background:#888;border-radius:6px;font-size:14px;color:#fff;border:none;cursor:pointer;font-weight:600;">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 // Marca d'água oculta no JS - Sistema de Controle de Ponto - Rogério Stranieri - hash: 7e2b1c9d
@@ -1696,6 +1720,14 @@ function fecharModalSalvar() {
   document.getElementById('modalSalvar').style.display = 'none';
 }
 
+function abrirModalEnvioSucesso() {
+  document.getElementById('modalEnvioSucesso').style.display = 'flex';
+}
+
+function fecharModalEnvioSucesso() {
+  document.getElementById('modalEnvioSucesso').style.display = 'none';
+}
+
 function salvarLocalmente() {
   fecharModalSalvar();
   salvarDados();
@@ -1863,7 +1895,7 @@ async function enviarPorEmail() {
 
     await new Promise(r => setTimeout(r, 1500));
     fecharModalSalvar();
-    alert('✅ Solicitação enviada!\n\nO email com o arquivo .txt chegará em rhbetel@outlook.com.br em instantes.\n\nSe não chegar em 2 minutos, verifique o log de Execuções no Apps Script.');
+    abrirModalEnvioSucesso();
 
   } catch (err) {
     console.error(err);
